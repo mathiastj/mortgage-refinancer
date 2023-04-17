@@ -1,0 +1,65 @@
+{
+  "extends": [
+    "next",
+    "eslint:recommended",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    // Workaround from https://github.com/typescript-eslint/typescript-eslint/issues/864
+    "createDefaultProgram": true
+  },
+  "env": {
+    "jest": true,
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "no-dupe-class-members": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "printWidth": 120,
+        "singleQuote": true,
+        "semi": false,
+        "trailingComma": "none",
+        "arrowParens": "avoid"
+      }
+    ],
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.ts",
+        "**/*.it.ts",
+        "bin/*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+      }
+    },
+    {
+      "files": [
+        "**/*.js"
+      ],
+      "rules": {
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/no-require-imports": "off"
+      }
+    }
+  ]
+}
