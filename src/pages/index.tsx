@@ -1,34 +1,40 @@
-import { FormEvent } from 'react'
+import React, { FormEvent } from 'react'
 import MortgageTable from './mortgage-table'
 
 export default function Home() {
+  // https://dev.to/andydziabo/how-to-pass-data-between-sibling-components-in-react-2cjg
+  const [years, setYears] = React.useState(0)
+
   // Handles the submit event on form submit.
   const handleSubmit = async (event: FormEvent) => {
     // Stop the form from submitting and refreshing the page.
     event.preventDefault()
 
     const target = event.target as typeof event.target & {
-      principal: { value: number }
-      terms_left: { value: number }
-      extra_charge: { value: number }
-      interest: { value: number }
-      estimated_price: { value: number }
-      other_interest_per_year: { value: number }
-      current_price: { value: number }
+      principal: { value: string }
+      terms_left: { value: string }
+      extra_charge: { value: string }
+      interest: { value: string }
+      estimated_price: { value: string }
+      other_interest_per_year: { value: string }
+      current_price: { value: string }
     }
 
     // Get data from the form.
     const data = {
-      principal: target.principal.value,
-      terms_left: target.terms_left.value,
-      extra_charge: target.extra_charge.value,
-      interest: target.interest.value,
-      estimated_price: target.estimated_price.value,
-      other_interest_per_year: target.other_interest_per_year.value,
-      current_price: target.current_price.value
+      principal: Number(target.principal.value),
+      termsLeft: Number(target.terms_left.value),
+      extraCharge: Number(target.extra_charge.value),
+      interest: Number(target.interest.value),
+      estimatedPrice: Number(target.estimated_price.value),
+      otherInterestPerYear: Number(target.other_interest_per_year.value),
+      currentPrice: Number(target.current_price.value)
     }
 
     // do math
+    console.log(data.termsLeft)
+    setYears(data.termsLeft)
+    return false
   }
 
   return (
@@ -157,7 +163,7 @@ export default function Home() {
           </button>
         </form>
       </div>
-      <MortgageTable years={5} />
+      <MortgageTable years={years} />
     </main>
   )
 }

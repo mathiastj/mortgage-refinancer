@@ -1,19 +1,10 @@
-import { Component } from 'react'
+import React from 'react'
 
-type MortgageTableProps = {
-  years?: number
-}
-
-type MortgageTableState = {
-  years: number
-}
-
-class MortgageTable extends Component<MortgageTableProps, MortgageTableState> {
-  render() {
-    const { years } = this.props
-
-    return years ? (
-      <table>
+// https://nextjs.org/learn/foundations/from-javascript-to-react/adding-interactivity-with-state
+export default function MortgageTable({ years }: { years: number }) {
+  return (
+    <table>
+      <thead>
         <tr>
           <th>År</th>
           <th>Restgæld</th>
@@ -24,9 +15,11 @@ class MortgageTable extends Component<MortgageTableProps, MortgageTableState> {
           <th>Fradrag</th>
           <th>Ydelse efter skat</th>
         </tr>
+      </thead>
+      <tbody>
         {[...Array(years)].map((_x, index) => (
           <tr key={index}>
-            <td>_x</td>
+            <td>{index + 1}</td>
             <td>{index + 1}</td>
             <td>{index + 1}</td>
             <td>{index + 1}</td>
@@ -36,11 +29,7 @@ class MortgageTable extends Component<MortgageTableProps, MortgageTableState> {
             <td>{index + 1}</td>
           </tr>
         ))}
-      </table>
-    ) : (
-      ''
-    )
-  }
+      </tbody>
+    </table>
+  )
 }
-
-export default MortgageTable
