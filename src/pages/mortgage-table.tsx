@@ -1,7 +1,7 @@
 import React from 'react'
+import { CalculatedLoan } from './types'
 
-// https://nextjs.org/learn/foundations/from-javascript-to-react/adding-interactivity-with-state
-export default function MortgageTable({ years }: { years: number }) {
+export default function MortgageTable({ calculatedLoan }: { calculatedLoan: CalculatedLoan }) {
   return (
     <table>
       <thead>
@@ -17,16 +17,16 @@ export default function MortgageTable({ years }: { years: number }) {
         </tr>
       </thead>
       <tbody>
-        {[...Array(years)].map((_x, index) => (
+        {[...Array(calculatedLoan.length)].map((_x, index) => (
           <tr key={index}>
             <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
-            <td>{index + 1}</td>
+            <td>{calculatedLoan[index].principal}</td>
+            <td>{calculatedLoan[index].interest}</td>
+            <td>{calculatedLoan[index].instalment}</td>
+            <td>{calculatedLoan[index].extraCharge}</td>
+            <td>{calculatedLoan[index].pricePreTax}</td>
+            <td>{calculatedLoan[index].taxDeduction}</td>
+            <td>{calculatedLoan[index].pricePostTax}</td>
           </tr>
         ))}
       </tbody>
