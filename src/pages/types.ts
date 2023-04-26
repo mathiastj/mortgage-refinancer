@@ -1,3 +1,5 @@
+import { MunicipalityType } from './municipality-tax-2023'
+
 export type BasicLoanInfo = {
   principal: number
   termsLeft: number
@@ -6,6 +8,9 @@ export type BasicLoanInfo = {
   estimatedPrice: number
   otherInterestPerYear: number
   currentPrice: number
+  single: boolean
+  churchTax: boolean
+  municipality: MunicipalityType
 }
 
 export type CalculatedLoan = {
