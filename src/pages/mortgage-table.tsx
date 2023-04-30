@@ -22,12 +22,12 @@ export default function MortgageTable({ calculatedLoan }: { calculatedLoan: Calc
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{calculatedLoan[index].principal.toFixed(0)}</td>
-              <td>{calculatedLoan[index].interest.toFixed(2)}</td>
-              <td>{calculatedLoan[index].instalment.toFixed(2)}</td>
-              <td>{calculatedLoan[index].extraCharge.toFixed(2)}</td>
-              <td>{calculatedLoan[index].pricePreTax.toFixed(2)}</td>
-              <td>{calculatedLoan[index].taxDeduction.toFixed(2)}</td>
-              <td>{calculatedLoan[index].pricePostTax.toFixed(2)}</td>
+              <td>{calculatedLoan[index].interest.toFixed(0)}</td>
+              <td>{calculatedLoan[index].instalment.toFixed(0)}</td>
+              <td>{calculatedLoan[index].extraCharge.toFixed(0)}</td>
+              <td>{calculatedLoan[index].pricePreTax.toFixed(0)}</td>
+              <td>{calculatedLoan[index].taxDeduction.toFixed(0)}</td>
+              <td>{calculatedLoan[index].pricePostTax.toFixed(0)}</td>
             </tr>
           ))}
         </tbody>

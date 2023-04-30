@@ -36,7 +36,7 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
     // Get data from the form.
     const data = {
       principal: Number(target.principal.value),
-      termsLeft: Number(target.terms_left.value),
+      yearsLeft: Number(target.terms_left.value),
       extraCharge: Number(target.extra_charge.value),
       interest: Number(target.interest.value),
       estimatedPrice: Number(target.estimated_price.value),
