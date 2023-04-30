@@ -67,12 +67,12 @@ const calculateAnnuityLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
   })
   return calculatedLoan
 }
-const getDeductableLeft = (loanInfo: BasicLoanInfo) => {
+const getDeductableLeft = (loanInfo: BasicLoanInfo): number => {
   const deductable = loanInfo.single ? DEDUCTABLE_SINGLE : DEDUCTABLE_COUPLE
   return Math.max(0, deductable - loanInfo.otherInterestPerYear)
 }
 
-const getBaseTax = (loanInfo: BasicLoanInfo) => {
+const getBaseTax = (loanInfo: BasicLoanInfo): number => {
   const municipalityTaxRate = municipalityTaxes[loanInfo.municipality]
   return loanInfo.churchTax ? municipalityTaxRate.churchTax + municipalityTaxRate.tax : municipalityTaxRate.tax
 }
@@ -109,7 +109,11 @@ function calculateQuarterlyPayments(
   }
 }
 
-function calculateTaxDeductionForYear(yearlyInterest: number, yearlyExtraCharge: number, loanInfo: BasicLoanInfo) {
+function calculateTaxDeductionForYear(
+  yearlyInterest: number,
+  yearlyExtraCharge: number,
+  loanInfo: BasicLoanInfo
+): number {
   const deductableLeft = getDeductableLeft(loanInfo)
   const baseTax = getBaseTax(loanInfo)
 
@@ -120,4 +124,56 @@ function calculateTaxDeductionForYear(yearlyInterest: number, yearlyExtraCharge:
   const taxDeductionAboveLimit = deductableAboveLimit * (baseTax / 100)
   const taxDeduction = taxDeductionBelowLimit + taxDeductionAboveLimit
   return taxDeduction
+}
+
+const LOAN_INTERVALS = [
+  {
+    from: 0,
+    to: 0.4,
+    charge: 0.45
+  },
+  {
+    from: 0.4,
+    to: 0.6,
+    charge: 0.85
+  },
+  {
+    from: 0.6,
+    to: 0.8,
+    charge: 1.2
+  }
+]
+
+export const calculateExtraCharge = (loanInfo: BasicLoanInfo): number => {
+  const loanPercentageOfPropertyValue = loanInfo.principal / loanInfo.estimatedPrice
+
+  let applicableLoanIntervals = 0
+  for (const interval of LOAN_INTERVALS) {
+    if (loanPercentageOfPropertyValue > interval.from) {
+      applicableLoanIntervals++
+    }
+  }
+  if (applicableLoanIntervals === 0) {
+    // If the loan info is messed up, just return 0
+    return 0
+  }
+
+  const extraChargePct = []
+  for (let i = 0; i < applicableLoanIntervals; i++) {
+    if (i === applicableLoanIntervals - 1) {
+      // Calculate how much of the last interval the loan percentage is, then calculate the extra charge for the remaining percentage
+      const extraChargeForInterval =
+        ((loanPercentageOfPropertyValue - LOAN_INTERVALS[i].from) / loanPercentageOfPropertyValue) *
+        LOAN_INTERVALS[i].charge
+      extraChargePct.push(extraChargeForInterval)
+      continue
+    }
+    // Get the extra charge for this interval
+    const extraChargeForInterval =
+      ((LOAN_INTERVALS[i].to - LOAN_INTERVALS[i].from) / loanPercentageOfPropertyValue) * LOAN_INTERVALS[i].charge
+    extraChargePct.push(extraChargeForInterval)
+  }
+
+  // Sum up the extra charges
+  return extraChargePct.reduce((partialSum, entry) => partialSum + entry, 0)
 }

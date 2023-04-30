@@ -22,3 +22,18 @@ export type CalculatedLoan = {
   taxDeduction: number
   pricePostTax: number
 }[]
+
+export type LoanDifference = {
+  principalOldLoan: number
+  principalNewLoan: number
+  principalDifference: number
+  pricePostTaxOldLoan: number
+  pricePostTaxNewLoan: number
+  pricePostTaxDifference: number
+  pricePreTaxOldLoan: number
+  pricePreTaxNewLoan: number
+  pricePreTaxDifference: number
+  instalmentOldLoan: number
+  instalmentNewLoan: number
+  instalmentDifference: number
+}

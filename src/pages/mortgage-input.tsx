@@ -1,5 +1,5 @@
 import React, { FormEvent } from 'react'
-import { calculateLoan } from './calculate-loan'
+import { calculateLoan, calculateExtraCharge } from './calculate-loan'
 import { CalculatedLoan } from './types'
 import { Municipality, MunicipalityType } from './municipality-tax-2023'
 
@@ -25,7 +25,6 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
     const target = event.target as typeof event.target & {
       principal: { value: string }
       terms_left: { value: string }
-      extra_charge: { value: string }
       interest: { value: string }
       estimated_price: { value: string }
       other_interest_per_year: { value: string }
@@ -37,7 +36,7 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
     const data = {
       principal: Number(target.principal.value),
       yearsLeft: Number(target.terms_left.value),
-      extraCharge: Number(target.extra_charge.value),
+      extraCharge: 0,
       interest: Number(target.interest.value),
       estimatedPrice: Number(target.estimated_price.value),
       otherInterestPerYear: Number(target.other_interest_per_year.value),
@@ -46,6 +45,8 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
       churchTax,
       municipality: target.municipality.value
     }
+    const extraCharge = calculateExtraCharge(data)
+    data.extraCharge = extraCharge
 
     const calculatedLoan = calculateLoan(data)
     setCalculatedLoan(calculatedLoan)
@@ -82,19 +83,6 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
             id="terms_left"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="30"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="extra_charge" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Bidragssats i % (kan udregnes ud fra vurdering og hovedstol)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            id="extra_charge"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="0.45"
             required
           />
         </div>
@@ -165,7 +153,7 @@ export default function MortgageInput({ setCalculatedLoan }: { setCalculatedLoan
             required
           />
         </div>
-        {/* more: price/kurs of new loan, new loan interest rate, single or two persons on the loan for 50k/100k rate, municipality for taxes, church tax toggle */}
+        {/* more: price/kurs of new loan, new loan interest rate */}
       </div>
       <div className="flex items-start mb-6">
         <div className="flex items-center h-5">
