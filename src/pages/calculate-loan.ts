@@ -8,6 +8,8 @@ const EXTRA_DEDUCTABLE_PERCENT_BELOW_LIMIT = 8
 
 const QUARTERS_PER_YEAR = 4
 
+const CUSTOMER_KRONER_EXTRA_CHARGE_REBATE = 0.15
+
 type YearlyPayment = {
   yearlyExtraCharge: number
   yearlyInterest: number
@@ -16,10 +18,15 @@ type YearlyPayment = {
 }
 
 export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
-  //TODO:  check for customerKroner
+  if (loanInfo.customerKroner) {
+    loanInfo.extraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
+  }
   const oldCalculatedLoan = calculateAnnuityLoan(loanInfo)
 
-  const newLoanExtraCharge = calculateExtraCharge(loanInfo)
+  let newLoanExtraCharge = calculateExtraCharge(loanInfo)
+  if (loanInfo.customerKroner) {
+    newLoanExtraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
+  }
   const newLoanPrincipal = calculateNewPrincipal(loanInfo)
   const newCalculatedLoan = calculateAnnuityLoan({
     extraCharge: newLoanExtraCharge,
