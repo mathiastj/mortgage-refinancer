@@ -1,4 +1,4 @@
-import { BasicLoanInfo, CalculatedLoan } from './types'
+import { AllLoanInfo, BasicLoanInfo, CalculatedLoan, LoanDifference, TotalCalculation } from './types'
 import { municipalityTaxes } from './municipality-tax-2023'
 
 const DEDUCTABLE_SINGLE = 50000
@@ -15,8 +15,88 @@ type YearlyPayment = {
   yearlyPricePreTax: number
 }
 
-export const calculateLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
-  return calculateAnnuityLoan(loanInfo)
+export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
+  //TODO:  check for customerKroner
+  const oldCalculatedLoan = calculateAnnuityLoan(loanInfo)
+
+  const newLoanExtraCharge = calculateExtraCharge(loanInfo)
+  const newLoanPrincipal = calculateNewPrincipal(loanInfo)
+  const newCalculatedLoan = calculateAnnuityLoan({
+    extraCharge: newLoanExtraCharge,
+    interest: loanInfo.interestNewLoan,
+    principal: newLoanPrincipal,
+    yearsLeft: loanInfo.yearsLeft,
+    otherInterestPerYear: loanInfo.otherInterestPerYear,
+    single: loanInfo.single,
+    churchTax: loanInfo.churchTax,
+    municipality: loanInfo.municipality
+  })
+
+  const loanDifference = calculateLoanDifference(oldCalculatedLoan, newCalculatedLoan)
+
+  return { oldCalculatedLoan, newCalculatedLoan, loanDifference }
+}
+
+const calculateLoanDifference = (
+  oldCalculatedLoan: CalculatedLoan,
+  newCalculatedLoan: CalculatedLoan
+): LoanDifference => {
+  const principalDifference = newCalculatedLoan[0].principal - oldCalculatedLoan[0].principal
+  const pricePostTaxDifference = newCalculatedLoan[0].pricePostTax - oldCalculatedLoan[0].pricePostTax
+  const pricePreTaxDifference = newCalculatedLoan[0].pricePreTax - oldCalculatedLoan[0].pricePreTax
+  const instalmentDifference = newCalculatedLoan[0].instalment - oldCalculatedLoan[0].instalment
+
+  let yearsTilBreakEvenPrincipal = -1
+  let yearsTilBreakEvenPaymentsPostTax = -1
+  let sumOldPaymentsPreTax = 0
+  let sumNewPaymentsPreTax = 0
+  let sumOldPaymentsPostTax = 0
+  let sumNewPaymentsPostTax = 0
+  for (let i = 0; i < oldCalculatedLoan.length; i++) {
+    if (newCalculatedLoan[i].principal > oldCalculatedLoan[i].principal && yearsTilBreakEvenPrincipal === -1) {
+      yearsTilBreakEvenPrincipal = i
+    }
+    sumOldPaymentsPreTax += oldCalculatedLoan[i].pricePreTax
+    sumNewPaymentsPreTax += newCalculatedLoan[i].pricePreTax
+    sumOldPaymentsPostTax += oldCalculatedLoan[i].pricePostTax
+    sumNewPaymentsPostTax += newCalculatedLoan[i].pricePostTax
+    if (sumOldPaymentsPostTax > sumNewPaymentsPostTax) {
+      yearsTilBreakEvenPaymentsPostTax = i
+    }
+  }
+  const totalPaymentPostTaxDifference = sumNewPaymentsPostTax - sumOldPaymentsPostTax
+  const totalPaymentPreTaxDifference = sumNewPaymentsPreTax - sumOldPaymentsPreTax
+
+  const loanDifference: LoanDifference = {
+    principalOldLoan: oldCalculatedLoan[0].principal,
+    principalNewLoan: newCalculatedLoan[0].principal,
+    principalDifference,
+    pricePostTaxOldLoan: oldCalculatedLoan[0].pricePostTax,
+    pricePostTaxNewLoan: newCalculatedLoan[0].pricePostTax,
+    pricePostTaxDifference,
+    pricePreTaxOldLoan: oldCalculatedLoan[0].pricePreTax,
+    pricePreTaxNewLoan: newCalculatedLoan[0].pricePreTax,
+    pricePreTaxDifference,
+    instalmentOldLoan: oldCalculatedLoan[0].instalment,
+    instalmentNewLoan: newCalculatedLoan[0].instalment,
+    instalmentDifference,
+    breakEvenPrincipalAfterYears: yearsTilBreakEvenPrincipal,
+    breakEvenPaymentsPostTaxAfterYears: yearsTilBreakEvenPaymentsPostTax,
+    totalPaymentPreTaxOldLoan: sumOldPaymentsPreTax,
+    totalPaymentPreTaxNewLoan: sumNewPaymentsPreTax,
+    totalPaymentPreTaxDifference,
+    totalPaymentPostTaxOldLoan: sumOldPaymentsPostTax,
+    totalPaymentPostTaxNewLoan: sumNewPaymentsPostTax,
+    totalPaymentPostTaxDifference
+  }
+  return loanDifference
+}
+
+const calculateNewPrincipal = (loanInfo: AllLoanInfo): number => {
+  const currentLoanPrice = loanInfo.principal * (loanInfo.currentPrice / 100)
+  const newLoanPrice = 1 + (1 - loanInfo.currentPriceNewLoan / 100)
+
+  return currentLoanPrice * newLoanPrice + loanInfo.feesNewLoan
 }
 
 const calculateAnnuityLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
@@ -144,7 +224,7 @@ const LOAN_INTERVALS = [
   }
 ]
 
-export const calculateExtraCharge = (loanInfo: BasicLoanInfo): number => {
+export const calculateExtraCharge = (loanInfo: AllLoanInfo): number => {
   const loanPercentageOfPropertyValue = loanInfo.principal / loanInfo.estimatedPrice
 
   let applicableLoanIntervals = 0
