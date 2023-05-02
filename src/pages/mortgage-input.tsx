@@ -1,5 +1,5 @@
 import React, { FormEvent } from 'react'
-import { calculateLoan, calculateExtraCharge } from './calculate-loan'
+import { calculateLoan } from './calculate-loan'
 import { CalculatedLoan, LoanDifference } from './types'
 import { Municipality, MunicipalityType } from './municipality-tax-2023'
 
@@ -67,8 +67,6 @@ export default function MortgageInput({
       feesNewLoan: Number(target.fees_new_loan.value),
       interestNewLoan: Number(target.interest_new_loan.value)
     }
-    // const extraCharge = calculateExtraCharge(data) // Remember to only use this for the new loan!
-    // data.extraCharge = extraCharge
 
     const totalCalculation = calculateLoan(data)
     setOldCalculatedLoan(totalCalculation.oldCalculatedLoan)
