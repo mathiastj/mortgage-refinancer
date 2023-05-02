@@ -3,6 +3,7 @@
 Calculate refinancing of fixed Danish Totalkredit mortgages with "installments"/afdrag.
 
 Use on desktop, there's a lot of tables and numbers.
+https://mathiastj.github.io/mortgage-refinancer/
 
 ## Motivation
 
