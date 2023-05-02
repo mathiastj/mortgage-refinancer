@@ -1,8 +1,8 @@
 import React from 'react'
-import MortgageInput from './mortgage-input'
-import MortgageTable from './mortgage-table'
-import MortgageDifferenceTable from './mortgage-difference-table'
-import { CalculatedLoan, LoanDifference } from './types'
+import MortgageInput from '../components/mortgage-input'
+import MortgageTable from '../components/mortgage-table'
+import MortgageDifferenceTable from '../components/mortgage-difference-table'
+import { CalculatedLoan, LoanDifference } from '../lib/types'
 
 export default function Home() {
   const [oldCalculatedLoan, setOldCalculatedLoan] = React.useState<CalculatedLoan>([])
