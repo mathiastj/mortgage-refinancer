@@ -58,8 +58,9 @@ export type LoanDifference =
       totalPaymentPostTaxOldLoan: number
       totalPaymentPostTaxNewLoan: number
       totalPaymentPostTaxDifference: number
-      breakEvenPrincipalAfterYears: number
-      breakEvenPaymentsPostTaxAfterYears: number
+      breakevenPrincipalAfterYears: number
+      breakevenPaymentsPostTaxAfterYears: number
+      breakevenTotalPaymentsPostTaxAfterYears: number
     }
   | undefined
 

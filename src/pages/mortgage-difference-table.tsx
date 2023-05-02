@@ -5,12 +5,19 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
   if (!loanDifference) {
     return null
   }
+
+  // Hide breakevens if they are never reached, or reached in the first year
+  const hideBreakevenPrincipalAfterYears = [-1, 1].includes(loanDifference.breakevenPrincipalAfterYears)
+  const hideBreakevenTotalPaymentsPostTaxAfterYears = [-1, 1].includes(
+    loanDifference.breakevenTotalPaymentsPostTaxAfterYears
+  )
+  const hideBreakevenPaymentsPostTaxAfterYears = [-1, 1].includes(loanDifference.breakevenPaymentsPostTaxAfterYears)
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div className="text-center">
+      <div className="text-center text-lg pb-4">
         <p>Låneforskel</p>
       </div>
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 border-separate border-spacing-x-4">
+      <table className="w-full text-sm text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-x-4 pb-4">
         <thead>
           <tr>
             <th></th>
@@ -21,7 +28,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
         </thead>
         <tbody>
           <tr key="1">
-            <td>
+            <td className="text-left">
               <b>Restgæld</b>
             </td>
             <td>{loanDifference.principalOldLoan.toFixed(0)}</td>
@@ -29,7 +36,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
             <td>{loanDifference.principalDifference.toFixed(0)}</td>
           </tr>
           <tr key="2">
-            <td>
+            <td className="text-left">
               <b>Ydelse før skat første år</b>
             </td>
             <td>{loanDifference.pricePreTaxOldLoan.toFixed(0)}</td>
@@ -37,7 +44,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
             <td>{loanDifference.pricePreTaxDifference.toFixed(0)}</td>
           </tr>
           <tr key="3">
-            <td>
+            <td className="text-left">
               <b>Ydelse efter skat første år</b>
             </td>
             <td>{loanDifference.pricePostTaxOldLoan.toFixed(0)}</td>
@@ -45,7 +52,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
             <td>{loanDifference.pricePostTaxDifference.toFixed(0)}</td>
           </tr>
           <tr key="3">
-            <td>
+            <td className="text-left">
               <b>Afdrag første år</b>
             </td>
             <td>{loanDifference.instalmentOldLoan.toFixed(0)}</td>
@@ -53,7 +60,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
             <td>{loanDifference.instalmentDifference.toFixed(0)}</td>
           </tr>
           <tr key="4">
-            <td>
+            <td className="text-left">
               <b>Total tilbagebetaling før skat</b>
             </td>
             <td>{loanDifference.totalPaymentPreTaxOldLoan.toFixed(0)}</td>
@@ -61,7 +68,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
             <td>{loanDifference.totalPaymentPreTaxDifference.toFixed(0)}</td>
           </tr>
           <tr key="5">
-            <td>
+            <td className="text-left">
               <b>Total tilbagebetaling efter skat</b>
             </td>
             <td>{loanDifference.totalPaymentPostTaxOldLoan.toFixed(0)}</td>
@@ -70,18 +77,21 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
           </tr>
         </tbody>
       </table>
-      {/* only show if not -1 */}
-      <div className="text-center">
-        {loanDifference.breakEvenPrincipalAfterYears === -0 ? null : (
-          <p>Restgæld break even efter {loanDifference.breakEvenPrincipalAfterYears} år</p>
-        )}
-      </div>
-      {/* only show if not -1 */}
-      <div className="text-center">
-        {loanDifference.breakEvenPaymentsPostTaxAfterYears === -1 ? null : (
-          <p>Ydelse efter skat break even efter {loanDifference.breakEvenPaymentsPostTaxAfterYears} år</p>
-        )}
-      </div>
+      {hideBreakevenPrincipalAfterYears ? null : (
+        <div className="text-center pb-2">
+          <p>Restgæld breakeven i det {loanDifference.breakevenPrincipalAfterYears}. år</p>
+        </div>
+      )}
+      {hideBreakevenTotalPaymentsPostTaxAfterYears ? null : (
+        <div className="text-center pb-2">
+          <p>Total ydelse efter skat breakeven i det {loanDifference.breakevenTotalPaymentsPostTaxAfterYears}. år</p>
+        </div>
+      )}
+      {hideBreakevenPaymentsPostTaxAfterYears ? null : (
+        <div className="text-center pb-2">
+          <p>Ydelse efter skat overstiger i det {loanDifference.breakevenPaymentsPostTaxAfterYears}. år</p>
+        </div>
+      )}
     </div>
   )
 }

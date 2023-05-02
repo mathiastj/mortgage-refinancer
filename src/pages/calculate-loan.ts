@@ -23,11 +23,11 @@ export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
   }
   const oldCalculatedLoan = calculateAnnuityLoan(loanInfo)
 
-  let newLoanExtraCharge = calculateExtraCharge(loanInfo)
+  const newLoanPrincipal = calculateNewPrincipal(loanInfo)
+  let newLoanExtraCharge = calculateExtraCharge({ ...loanInfo, principal: newLoanPrincipal })
   if (loanInfo.customerKroner) {
     newLoanExtraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
   }
-  const newLoanPrincipal = calculateNewPrincipal(loanInfo)
   const newCalculatedLoan = calculateAnnuityLoan({
     extraCharge: newLoanExtraCharge,
     interest: loanInfo.interestNewLoan,
@@ -53,22 +53,31 @@ const calculateLoanDifference = (
   const pricePreTaxDifference = newCalculatedLoan[0].pricePreTax - oldCalculatedLoan[0].pricePreTax
   const instalmentDifference = newCalculatedLoan[0].instalment - oldCalculatedLoan[0].instalment
 
-  let yearsTilBreakEvenPrincipal = -1
-  let yearsTilBreakEvenPaymentsPostTax = -1
+  let yearsTilBreakevenPrincipal = -1
+  let yearsTilTotalBreakevenPaymentsPostTax = -1
+  let yearsTilBreakevenPaymentPostTax = -1
   let sumOldPaymentsPreTax = 0
   let sumNewPaymentsPreTax = 0
   let sumOldPaymentsPostTax = 0
   let sumNewPaymentsPostTax = 0
   for (let i = 0; i < oldCalculatedLoan.length; i++) {
-    if (newCalculatedLoan[i].principal > oldCalculatedLoan[i].principal && yearsTilBreakEvenPrincipal === -1) {
-      yearsTilBreakEvenPrincipal = i
+    // Years are not zero indexed
+    const currentYear = i + 1
+    if (newCalculatedLoan[i].principal > oldCalculatedLoan[i].principal && yearsTilBreakevenPrincipal === -1) {
+      yearsTilBreakevenPrincipal = currentYear
+    }
+    if (
+      newCalculatedLoan[i].pricePostTax > oldCalculatedLoan[i].pricePostTax &&
+      yearsTilBreakevenPaymentPostTax === -1
+    ) {
+      yearsTilBreakevenPaymentPostTax = currentYear
     }
     sumOldPaymentsPreTax += oldCalculatedLoan[i].pricePreTax
     sumNewPaymentsPreTax += newCalculatedLoan[i].pricePreTax
     sumOldPaymentsPostTax += oldCalculatedLoan[i].pricePostTax
     sumNewPaymentsPostTax += newCalculatedLoan[i].pricePostTax
-    if (sumOldPaymentsPostTax > sumNewPaymentsPostTax) {
-      yearsTilBreakEvenPaymentsPostTax = i
+    if (sumNewPaymentsPostTax > sumOldPaymentsPostTax && yearsTilTotalBreakevenPaymentsPostTax === -1) {
+      yearsTilTotalBreakevenPaymentsPostTax = currentYear
     }
   }
   const totalPaymentPostTaxDifference = sumNewPaymentsPostTax - sumOldPaymentsPostTax
@@ -87,8 +96,9 @@ const calculateLoanDifference = (
     instalmentOldLoan: oldCalculatedLoan[0].instalment,
     instalmentNewLoan: newCalculatedLoan[0].instalment,
     instalmentDifference,
-    breakEvenPrincipalAfterYears: yearsTilBreakEvenPrincipal,
-    breakEvenPaymentsPostTaxAfterYears: yearsTilBreakEvenPaymentsPostTax,
+    breakevenPrincipalAfterYears: yearsTilBreakevenPrincipal,
+    breakevenTotalPaymentsPostTaxAfterYears: yearsTilTotalBreakevenPaymentsPostTax,
+    breakevenPaymentsPostTaxAfterYears: yearsTilBreakevenPaymentPostTax,
     totalPaymentPreTaxOldLoan: sumOldPaymentsPreTax,
     totalPaymentPreTaxNewLoan: sumNewPaymentsPreTax,
     totalPaymentPreTaxDifference,
@@ -213,6 +223,7 @@ function calculateTaxDeductionForYear(
   return taxDeduction
 }
 
+// https://www.totalkredit.dk/siteassets/dokumenter/privat/prisblad/prisblad--privat.pdf
 const LOAN_INTERVALS = [
   {
     from: 0,
@@ -241,7 +252,7 @@ export const calculateExtraCharge = (loanInfo: AllLoanInfo): number => {
     }
   }
   if (applicableLoanIntervals === 0) {
-    // If the loan info is messed up, just return 0
+    // If the loan info is messed up (for instance if somebody entered negative values), just return 0
     return 0
   }
 

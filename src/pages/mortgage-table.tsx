@@ -1,10 +1,16 @@
 import React from 'react'
 import { CalculatedLoan } from './types'
 
-export default function MortgageTable({ calculatedLoan }: { calculatedLoan: CalculatedLoan }) {
+export default function MortgageTable({ calculatedLoan, label }: { calculatedLoan: CalculatedLoan; label: string }) {
+  if (calculatedLoan.length === 0) {
+    return null
+  }
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 border-separate border-spacing-x-4">
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-4">
+      <div className="text-center text-lg py-2">
+        <p>{label}</p>
+      </div>
+      <table className="w-full text-sm text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-x-4">
         <thead>
           <tr>
             <th>År</th>
