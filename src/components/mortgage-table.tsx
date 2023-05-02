@@ -6,7 +6,7 @@ export default function MortgageTable({ calculatedLoan, label }: { calculatedLoa
     return null
   }
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-4">
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-4 pt-4">
       <div className="text-center text-lg py-2">
         <p>{label}</p>
       </div>

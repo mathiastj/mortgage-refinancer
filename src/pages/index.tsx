@@ -10,11 +10,11 @@ export default function Home() {
   const [loanDifference, setLoanDifference] = React.useState<LoanDifference>()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-10">
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 pt-8">
       <div className="text-center text-4xl">
         <p>Beregn omlægning af fastforrentet Totalkredit lån med afdrag</p>
       </div>
-      <div className="z-10 w-full max-w-fit items-center justify-between font-mono text-sm lg:flex py-8">
+      <div className="z-10 w-full max-w-fit items-center justify-between font-mono text-sm lg:flex py-4">
         <MortgageInput
           setOldCalculatedLoan={setOldCalculatedLoan}
           setNewCalculatedLoan={setNewCalculatedLoan}

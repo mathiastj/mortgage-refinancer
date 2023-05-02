@@ -13,7 +13,7 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
   )
   const hideBreakevenPaymentsPostTaxAfterYears = [-1, 1].includes(loanDifference.breakevenPaymentsPostTaxAfterYears)
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg pt-8">
       <div className="text-center text-lg pb-4">
         <p>Låneforskel</p>
       </div>
