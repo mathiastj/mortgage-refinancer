@@ -1,38 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Mortgage Refinancer
 
-## Getting Started
+Calculate refinancing of fixed Danish Totalkredit mortgages with "installments"/afdrag.
 
-First, run the development server:
+Use on desktop, there's a lot of tables and numbers.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Motivation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+I wanted to calculate the breakeven point of refinancing my mortgage. The Totalkredit app has a calculator, but it doesn't take into account [the extra 8% tax deduction of interest payments up to 50k/100k](https://skat.dk/data.aspx?oid=2047228). The loan offers sent from my bank did not take this into account either.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+I started out with an Excel sheet, but figured this would be a fun little project, and I also think it gives a better overview.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Technical motivation
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+I wanted to try out React Hooks and Tailwind CSS with a Next.js setup.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Features
 
-## Learn More
+- Correctly use the 8% extra tax deduction on interest and "bidrag" payments. Takes into account whether the mortgage is financed by a single person or a couple.
+- To correctly calculate the 8% extra tax deduction it's possible for the user to enter their other interest payments per year.
+- Choose municipality for correct municipality and church tax.
+- Shows breakeven point in years of when the principal of the new loan exceeds that of the old.
+- Shows breakeven point of when monthly payments after taxes _in total_ for the new loan have exceeded that of the old.
+- Shows breakeven point of when monthly payments after taxes for the new loan have exceeded that of the old for a year.
+- Automatically calculates "bidragssats" (extra charges) for the new loan, based on estimated price of the house and the new loan amount.
+- Show the price with or without "kundekroner", a discount on the "bidragssats" (extra charges).
+- Easily compare old and new loan in two tables next to each other.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Here's a screenshot from desktop:
+![image](https://user-images.githubusercontent.com/2278040/235747060-d47aed9a-f8f2-41c6-a5fc-32c5bea5e060.png)
