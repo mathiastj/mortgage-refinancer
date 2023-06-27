@@ -2,6 +2,7 @@ import React, { FormEvent } from 'react'
 import { calculateLoan } from '../lib/calculate-loan'
 import { CalculatedLoan, LoanDifference } from '../lib/types'
 import { Municipality, MunicipalityType } from '../lib/municipality-tax-2023'
+import LabelWithTooltip from './label-with-tooltip'
 
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
@@ -81,9 +82,11 @@ export default function MortgageInput({
       <div className="px-8">
         <div className="grid gap-6 mb-6 md:grid-cols-1">
           <div>
-            <label htmlFor="principal" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Restgæld
-            </label>
+            <LabelWithTooltip
+              inputId="principal"
+              label="Restgæld"
+              tooltip="Hvor meget der mangler at blive betalt tilbage på lånet lige nu"
+            />
             <input
               type="number"
               id="principal"
@@ -93,9 +96,12 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="terms_left" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Løbetid tilbage i år
-            </label>
+            <LabelWithTooltip
+              inputId="terms_left"
+              label="Løbetid tilbage i år"
+              tooltip="Hvor mange år der er tilbage af lånet"
+            />
+
             <input
               type="number"
               id="terms_left"
@@ -105,9 +111,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="extra_charge" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Bidragssats i % for nuværende lån
-            </label>
+            <LabelWithTooltip
+              inputId="extra_charge"
+              label="Bidragssats i %"
+              tooltip="Kan findes på Totalkredits MitHjem. Det er bidragssatsen for det nuværende lån der skal indtastes."
+            />
             <input
               type="number"
               step="0.01"
@@ -118,9 +126,7 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="interest" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Rente i % for nuværende lån
-            </label>
+            <LabelWithTooltip inputId="interest" label="Rente i % for nuværende lån" />
             <input
               type="number"
               id="interest"
@@ -130,9 +136,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="estimated_price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Vurdering
-            </label>
+            <LabelWithTooltip
+              inputId="estimated_price"
+              label="Vurdering"
+              tooltip="Hvad huset cirka er værd i dag. Hvis ingen ide brug købspris. Bidragssatsen på det nye beregnes automatisk ud fra vurderingen og den restgælden på det nye lån"
+            />
             <input
               type="number"
               id="estimated_price"
@@ -142,12 +150,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label
-              htmlFor="other_interest_per_year"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Andre renteudgifter per år
-            </label>
+            <LabelWithTooltip
+              inputId="other_interest_per_year"
+              label="Andre renteudgifter per år"
+              tooltip="De første 50.000 i renteudgifter om året per person har et ekstra rentefradrag på 8%. Indtast her andre renteudgifter per år fra fx billån eller SU lån. Beregneren bruger så kun det overskydende ekstra rentefradrag på realkreditlånet. Se fodnote 4 her: https://www.skm.dk/skattetal/satser/skatte-og-afgiftsberegning/skattevaerdi-af-fradrag-i-2023/"
+            />
             <input
               type="number"
               id="other_interest_per_year"
@@ -157,9 +164,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="municipality" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Kommune
-            </label>
+            <LabelWithTooltip
+              inputId="municipality"
+              label="Kommune"
+              tooltip="Henter automatisk skattesats og kirkeskattesats på baggrund af kommune. Vælg hvilken kommune du er skattepligtig i."
+            />
             <select
               id="municipality"
               name="municipality"
@@ -173,9 +182,11 @@ export default function MortgageInput({
             </select>
           </div>
           <div>
-            <label htmlFor="current_price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Kurs nuværende lån
-            </label>
+            <LabelWithTooltip
+              inputId="current_price"
+              label="Kurs nuværende lån"
+              tooltip="Kursen på det nuværende fastforrentede lån. Find først Fondskoden på Totalkredits MitHjem. Derefter find kursen hos Nasdaq. Fx ved at google DK0009537417, eller find den direkte hos https://www.nasdaqomxnordic.com/bonds/denmark"
+            />
             <input
               type="number"
               step={0.01}
@@ -186,12 +197,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label
-              htmlFor="current_price_new_loan"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
-              Kurs nyt lån
-            </label>
+            <LabelWithTooltip
+              inputId="current_price_new_loan"
+              label="Kurs nyt lån"
+              tooltip="Kursen på det nye lån. Kan ses direkte på Totalkredits hjemmeside: https://www.totalkredit.dk/boliglan/kurser-og-priser/"
+            />
             <input
               type="number"
               step={0.01}
@@ -202,9 +212,7 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="interest_new_loan" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Rente i % nyt lån
-            </label>
+            <LabelWithTooltip inputId="interest_new_loan" label="Rente i % nyt lån" />
             <input
               type="number"
               id="interest_new_loan"
@@ -214,9 +222,11 @@ export default function MortgageInput({
             />
           </div>
           <div>
-            <label htmlFor="fees_new_loan" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Gebyrer ved omlægning
-            </label>
+            <LabelWithTooltip
+              inputId="fees_new_loan"
+              label="Gebyrer ved omlægning"
+              tooltip="Hvad det koster at omlægge lånet. Lægges ind i det nye lån. Hvis man vil lave et ekstraordinært afdrag samtidig på fx 100.000 og de forventede omkostninger er 15.000 kan man indtaste -85.000"
+            />
             <input
               type="number"
               id="fees_new_loan"
@@ -270,6 +280,10 @@ export default function MortgageInput({
             <label htmlFor="couple" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
               Par
             </label>
+            <LabelWithTooltip
+              inputId="couple"
+              tooltip="Bruges til om udregne om det ekstra rentefradrag er på 50.000 eller 100.000, se info ved Andre renteudgifter per år"
+            />
           </div>
         </div>
         <div className="flex items-start mb-6">
@@ -286,6 +300,10 @@ export default function MortgageInput({
           <label htmlFor="customer_kroner" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
             Inkluder kundekroner
           </label>
+          <LabelWithTooltip
+            inputId="customer_kroner"
+            tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
+          />
         </div>
         <div className="grid">
           <button
