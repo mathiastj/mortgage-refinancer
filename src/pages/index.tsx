@@ -3,6 +3,7 @@ import MortgageInput from '../components/mortgage-input'
 import MortgageTable from '../components/mortgage-table'
 import MortgageDifferenceTable from '../components/mortgage-difference-table'
 import { CalculatedLoan, LoanDifference } from '../lib/types'
+import GithubCorner from '../components/github-corner'
 
 export default function Home() {
   const [oldCalculatedLoan, setOldCalculatedLoan] = React.useState<CalculatedLoan>([])
@@ -10,7 +11,8 @@ export default function Home() {
   const [loanDifference, setLoanDifference] = React.useState<LoanDifference>()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-4 pt-8">
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 pt-16">
+      <GithubCorner />
       <div className="text-center text-4xl">
         <p>Beregn omlægning af fastforrentet Totalkredit lån med afdrag</p>
       </div>
