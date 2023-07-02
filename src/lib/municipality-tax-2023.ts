@@ -101,6 +101,10 @@ export const Municipality = {
 
 export type MunicipalityType = (typeof Municipality)[keyof typeof Municipality]
 
+export const isMunicipality = (value: string): value is MunicipalityType => {
+  return Object.values(Municipality).includes(value as MunicipalityType)
+}
+
 export const municipalityTaxes = {
   [Municipality.KØBENHAVN]: { tax: 23.7, churchTax: 0.8 },
   [Municipality.FREDERIKSBERG]: { tax: 23.47, churchTax: 0.5 },
