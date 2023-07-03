@@ -5,6 +5,11 @@ Calculate refinancing of fixed Danish Totalkredit mortgages with "installments"/
 Use on desktop, there's a lot of tables and numbers.
 https://mathiastj.github.io/mortgage-refinancer/
 
+To see an example of converting up from 1% to 4% interest check:
+https://mathiastj.github.io/mortgage-refinancer/?example=1
+
+To see an example of converting down from 4% to 2% interest check:
+https://mathiastj.github.io/mortgage-refinancer/?example=2
 ## Motivation
 
 I wanted to calculate the breakeven point of refinancing my mortgage. The Totalkredit app has a calculator, but it doesn't take into account [the extra 8% tax deduction of interest payments up to 50k/100k](https://skat.dk/data.aspx?oid=2047228). The loan offers sent from my bank did not take this into account either.

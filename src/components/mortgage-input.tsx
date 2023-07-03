@@ -4,6 +4,7 @@ import { AllLoanInfo, CalculatedLoan, LoanDifference } from '../lib/types'
 import { Municipality, MunicipalityType, isMunicipality } from '../lib/municipality-tax-2023'
 import LabelWithTooltip from './label-with-tooltip'
 import { NextRouter, useRouter } from 'next/router'
+import { getLoanInfoFromExample } from '../lib/examples'
 
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
@@ -11,6 +12,11 @@ type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
 const getLoanInfoFromQueryParams = (
   router: NextRouter
 ): Partial<AllLoanInfo> & { single: boolean; churchTax: boolean; customerKroner: boolean } => {
+  // Check for 'example' query param and let that overwrite everything else if set
+  if (router.query.example && !Array.isArray(router.query.example)) {
+    return getLoanInfoFromExample(router.query.example)
+  }
+
   // Validate municipality from input
   let municipality = undefined
   const municipalityInput = router.query.municipality
