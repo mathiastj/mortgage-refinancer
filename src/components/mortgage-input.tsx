@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useRef } from 'react'
+import React, { FormEvent, useEffect } from 'react'
 import { calculateLoan } from '../lib/calculate-loan'
 import { AllLoanInfo, CalculatedLoan, LoanDifference } from '../lib/types'
 import { Municipality, MunicipalityType, isMunicipality } from '../lib/municipality-tax-2023'
@@ -11,20 +11,21 @@ import { ParsedUrlQuery } from 'querystring'
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
 
-type LoanInfoFromQueryParams = Omit<Partial<AllLoanInfo>, 'single' | 'churchTax' | 'customerKroner'> & {
+type LoanInfoDefaults = Omit<Partial<AllLoanInfo>, 'single' | 'churchTax' | 'customerKroner' | 'municipality'> & {
   single: boolean
   churchTax: boolean
   customerKroner: boolean
+  municipality: MunicipalityType
 }
 
-const getLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoFromQueryParams => {
+const getLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
   // Check for 'example' query param and let that overwrite everything else if set
   if (query.example && !Array.isArray(query.example)) {
     return getLoanInfoFromExample(query.example)
   }
 
   // Validate municipality from input
-  let municipality = undefined
+  let municipality: MunicipalityType = Municipality.KØBENHAVN // Default to København
   const municipalityInput = query[loanInfoToQueryParam['municipality']]
   if (municipalityInput && !Array.isArray(municipalityInput) && isMunicipality(municipalityInput)) {
     municipality = municipalityInput
@@ -46,10 +47,10 @@ const getLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoFromQueryPar
     currentPrice: query[loanInfoToQueryParam['currentPrice']]
       ? Number(query[loanInfoToQueryParam['currentPrice']])
       : undefined,
-    single: query[loanInfoToQueryParam['single']] === '' ? true : false,
-    churchTax: query[loanInfoToQueryParam['churchTax']] === '' ? true : false,
+    single: query[loanInfoToQueryParam['single']] === 'true' ? true : false,
+    churchTax: query[loanInfoToQueryParam['churchTax']] === 'true' ? true : false,
     municipality,
-    customerKroner: query[loanInfoToQueryParam['customerKroner']] === '' ? true : false,
+    customerKroner: query[loanInfoToQueryParam['customerKroner']] === 'true' ? true : false,
     currentPriceNewLoan: query[loanInfoToQueryParam['currentPriceNewLoan']]
       ? Number(query[loanInfoToQueryParam['currentPriceNewLoan']])
       : undefined,
@@ -71,7 +72,7 @@ export default function MortgageInput({
   setNewCalculatedLoan: SetCalculatedLoanInfoFn
   setLoanDifference: SetLoanDifferenceFn
 }) {
-  const loanInfoFromQueryParams = useRef<LoanInfoFromQueryParams>({
+  const [defaultValues, setDefaultValues] = React.useState<LoanInfoDefaults>({
     principal: undefined,
     yearsLeft: undefined,
     extraCharge: undefined,
@@ -81,8 +82,8 @@ export default function MortgageInput({
     currentPrice: undefined,
     single: false,
     churchTax: false,
-    municipality: Municipality.KØBENHAVN,
     customerKroner: false,
+    municipality: Municipality.KØBENHAVN,
     currentPriceNewLoan: undefined,
     feesNewLoan: undefined,
     interestNewLoan: undefined
@@ -90,10 +91,10 @@ export default function MortgageInput({
 
   const query = useQuery()
 
-  const [single, setSingle] = React.useState(false)
-  const [churchTax, setChurchTax] = React.useState(false)
-  const [customerKroner, setCustomerKroner] = React.useState(false)
-  const [municipality, setMunicipality] = React.useState<MunicipalityType>(Municipality.KØBENHAVN)
+  const [single, setSingle] = React.useState(defaultValues.single)
+  const [churchTax, setChurchTax] = React.useState(defaultValues.churchTax)
+  const [customerKroner, setCustomerKroner] = React.useState(defaultValues.customerKroner)
+  const [municipality, setMunicipality] = React.useState<MunicipalityType>(defaultValues.municipality)
   const [copyLink, setCopyLink] = React.useState<null | string>(null)
 
   // Update the default values when the query params load
@@ -103,13 +104,11 @@ export default function MortgageInput({
     }
 
     const loanInfoFromQuery = getLoanInfoFromQueryParams(query)
-    loanInfoFromQueryParams.current = loanInfoFromQuery
-    setSingle(loanInfoFromQueryParams.current.single)
-    setChurchTax(loanInfoFromQueryParams.current.churchTax)
-    setCustomerKroner(loanInfoFromQueryParams.current.customerKroner)
-    if (loanInfoFromQueryParams.current.municipality) {
-      setMunicipality(loanInfoFromQueryParams.current.municipality)
-    }
+    setDefaultValues(loanInfoFromQuery)
+    setSingle(loanInfoFromQuery.single)
+    setChurchTax(loanInfoFromQuery.churchTax)
+    setCustomerKroner(loanInfoFromQuery.customerKroner)
+    setMunicipality(loanInfoFromQuery.municipality)
   }, [query])
 
   const onChurchTaxChange = () => {
@@ -124,7 +123,7 @@ export default function MortgageInput({
     setSingle(e.target.value === 'single')
   }
 
-  // Handles the submit event on form submit.
+  // Handles the submit event
   const handleSubmit = async (event: FormEvent) => {
     // Stop the form from submitting and refreshing the page.
     event.preventDefault()
@@ -161,6 +160,7 @@ export default function MortgageInput({
       interestNewLoan: Number(target.interest_new_loan.value)
     }
 
+    // Create shareable link
     const newLink = `${window.location.origin}?${Object.entries(data)
       .map(([k, v]) => {
         const typedKey = k as keyof AllLoanInfo
@@ -193,7 +193,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="2000000"
               required
-              defaultValue={loanInfoFromQueryParams.current.principal ?? undefined}
+              defaultValue={defaultValues.principal}
             />
           </div>
           <div>
@@ -209,7 +209,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="30"
               required
-              defaultValue={loanInfoFromQueryParams.current.yearsLeft ?? undefined}
+              defaultValue={defaultValues.yearsLeft}
             />
           </div>
           <div>
@@ -225,7 +225,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="0.45"
               required
-              defaultValue={loanInfoFromQueryParams.current.extraCharge ?? undefined}
+              defaultValue={defaultValues.extraCharge}
             />
           </div>
           <div>
@@ -236,7 +236,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="1"
               required
-              defaultValue={loanInfoFromQueryParams.current.interest ?? undefined}
+              defaultValue={defaultValues.interest}
             />
           </div>
           <div>
@@ -251,7 +251,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="3000000"
               required
-              defaultValue={loanInfoFromQueryParams.current.estimatedPrice ?? undefined}
+              defaultValue={defaultValues.estimatedPrice}
             />
           </div>
           <div>
@@ -266,7 +266,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="20000"
               required
-              defaultValue={loanInfoFromQueryParams.current.otherInterestPerYear ?? undefined}
+              defaultValue={defaultValues.otherInterestPerYear}
             />
           </div>
           <div>
@@ -302,7 +302,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="74.2"
               required
-              defaultValue={loanInfoFromQueryParams.current.currentPrice ?? undefined}
+              defaultValue={defaultValues.currentPrice}
             />
           </div>
           <div>
@@ -318,7 +318,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="95.2"
               required
-              defaultValue={loanInfoFromQueryParams.current.currentPriceNewLoan ?? undefined}
+              defaultValue={defaultValues.currentPriceNewLoan}
             />
           </div>
           <div>
@@ -329,7 +329,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="4"
               required
-              defaultValue={loanInfoFromQueryParams.current.interestNewLoan ?? undefined}
+              defaultValue={defaultValues.interestNewLoan}
             />
           </div>
           <div>
@@ -344,7 +344,7 @@ export default function MortgageInput({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="15000"
               required
-              defaultValue={loanInfoFromQueryParams.current.feesNewLoan ?? undefined}
+              defaultValue={defaultValues.feesNewLoan}
             />
           </div>
         </div>
