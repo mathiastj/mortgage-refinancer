@@ -4,7 +4,7 @@ import { AllLoanInfo, CalculatedLoan, LoanDifference } from '../lib/types'
 import { Municipality, MunicipalityType, isMunicipality } from '../lib/municipality-tax-2023'
 import LabelWithTooltip from './label-with-tooltip'
 import { getLoanInfoFromExample } from '../lib/examples'
-import { loanInfoToQueryParam } from '../lib/query-param-mapping'
+import { loanInfoToQueryParam, loanInfoToTypes, defaultValuesFromQueryParams } from '../lib/query-param-mapping'
 import { useQuery } from '../lib/use-query'
 import { ParsedUrlQuery } from 'querystring'
 
@@ -18,7 +18,7 @@ type LoanInfoDefaults = Omit<Partial<AllLoanInfo>, 'single' | 'churchTax' | 'cus
   municipality: MunicipalityType
 }
 
-const getLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
+const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
   // Check for 'example' query param and let that overwrite everything else if set
   if (query.example && !Array.isArray(query.example)) {
     return getLoanInfoFromExample(query.example)
@@ -31,36 +31,18 @@ const getLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => 
     municipality = municipalityInput
   }
 
-  return {
-    principal: query[loanInfoToQueryParam['principal']] ? Number(query[loanInfoToQueryParam['principal']]) : undefined,
-    yearsLeft: query[loanInfoToQueryParam['yearsLeft']] ? Number(query[loanInfoToQueryParam['yearsLeft']]) : undefined,
-    extraCharge: query[loanInfoToQueryParam['extraCharge']]
-      ? Number(query[loanInfoToQueryParam['extraCharge']])
-      : undefined,
-    interest: query[loanInfoToQueryParam['interest']] ? Number(query[loanInfoToQueryParam['interest']]) : undefined,
-    estimatedPrice: query[loanInfoToQueryParam['estimatedPrice']]
-      ? Number(query[loanInfoToQueryParam['estimatedPrice']])
-      : undefined,
-    otherInterestPerYear: query[loanInfoToQueryParam['otherInterestPerYear']]
-      ? Number(query[loanInfoToQueryParam['otherInterestPerYear']])
-      : undefined,
-    currentPrice: query[loanInfoToQueryParam['currentPrice']]
-      ? Number(query[loanInfoToQueryParam['currentPrice']])
-      : undefined,
-    single: query[loanInfoToQueryParam['single']] === 'true' ? true : false,
-    churchTax: query[loanInfoToQueryParam['churchTax']] === 'true' ? true : false,
-    municipality,
-    customerKroner: query[loanInfoToQueryParam['customerKroner']] === 'true' ? true : false,
-    currentPriceNewLoan: query[loanInfoToQueryParam['currentPriceNewLoan']]
-      ? Number(query[loanInfoToQueryParam['currentPriceNewLoan']])
-      : undefined,
-    feesNewLoan: query[loanInfoToQueryParam['feesNewLoan']]
-      ? Number(query[loanInfoToQueryParam['feesNewLoan']])
-      : undefined,
-    interestNewLoan: query[loanInfoToQueryParam['interestNewLoan']]
-      ? Number(query[loanInfoToQueryParam['interestNewLoan']])
-      : undefined
-  }
+  const defaultLoanInfo: LoanInfoDefaults = Object.entries(loanInfoToQueryParam).reduce((acc, [key, queryKey]) => {
+    const typedKey = key as keyof AllLoanInfo
+    if (loanInfoToTypes[typedKey] === 'number') {
+      return { ...acc, [typedKey]: query[queryKey] !== undefined ? Number(query[queryKey]) : undefined }
+    }
+    if (loanInfoToTypes[typedKey] === 'boolean') {
+      return { ...acc, [typedKey]: query[queryKey] === 'true' }
+    }
+    return { ...acc, [typedKey]: undefined }
+  }, defaultValuesFromQueryParams)
+
+  return { ...defaultLoanInfo, municipality }
 }
 
 export default function MortgageInput({
@@ -72,22 +54,7 @@ export default function MortgageInput({
   setNewCalculatedLoan: SetCalculatedLoanInfoFn
   setLoanDifference: SetLoanDifferenceFn
 }) {
-  const [defaultValues, setDefaultValues] = React.useState<LoanInfoDefaults>({
-    principal: undefined,
-    yearsLeft: undefined,
-    extraCharge: undefined,
-    interest: undefined,
-    estimatedPrice: undefined,
-    otherInterestPerYear: undefined,
-    currentPrice: undefined,
-    single: false,
-    churchTax: false,
-    customerKroner: false,
-    municipality: Municipality.KØBENHAVN,
-    currentPriceNewLoan: undefined,
-    feesNewLoan: undefined,
-    interestNewLoan: undefined
-  })
+  const [defaultValues, setDefaultValues] = React.useState<LoanInfoDefaults>(defaultValuesFromQueryParams)
 
   const query = useQuery()
 
@@ -103,7 +70,7 @@ export default function MortgageInput({
       return
     }
 
-    const loanInfoFromQuery = getLoanInfoFromQueryParams(query)
+    const loanInfoFromQuery = getDefaultLoanInfoFromQueryParams(query)
     setDefaultValues(loanInfoFromQuery)
     setSingle(loanInfoFromQuery.single)
     setChurchTax(loanInfoFromQuery.churchTax)
@@ -139,10 +106,10 @@ export default function MortgageInput({
       municipality: { value: MunicipalityType }
       current_price_new_loan: { value: string }
       fees_new_loan: { value: string }
-      interest_new_loan: { value: MunicipalityType }
+      interest_new_loan: { value: string }
     }
 
-    // Get data from the form.
+    // Get data from the form and from state
     const data = {
       principal: Number(target.principal.value),
       yearsLeft: Number(target.terms_left.value),
@@ -153,7 +120,7 @@ export default function MortgageInput({
       currentPrice: Number(target.current_price.value),
       single,
       churchTax,
-      municipality: target.municipality.value,
+      municipality,
       customerKroner,
       currentPriceNewLoan: Number(target.current_price_new_loan.value),
       feesNewLoan: Number(target.fees_new_loan.value),

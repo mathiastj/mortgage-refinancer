@@ -1,3 +1,4 @@
+import { Municipality } from './municipality-tax-2023'
 import { AllLoanInfo } from './types'
 
 export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
@@ -16,3 +17,37 @@ export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
   interestNewLoan: 'interest_new_loan',
   municipality: 'municipality'
 } as const
+
+export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
+  principal: 'number',
+  yearsLeft: 'number',
+  extraCharge: 'number',
+  interest: 'number',
+  estimatedPrice: 'number',
+  otherInterestPerYear: 'number',
+  currentPrice: 'number',
+  single: 'boolean',
+  churchTax: 'boolean',
+  customerKroner: 'boolean',
+  currentPriceNewLoan: 'number',
+  feesNewLoan: 'number',
+  interestNewLoan: 'number',
+  municipality: 'municipality'
+} as const
+
+export const defaultValuesFromQueryParams = {
+  principal: undefined,
+  yearsLeft: undefined,
+  extraCharge: undefined,
+  interest: undefined,
+  estimatedPrice: undefined,
+  otherInterestPerYear: undefined,
+  currentPrice: undefined,
+  single: false,
+  churchTax: false,
+  customerKroner: false,
+  municipality: Municipality.KØBENHAVN,
+  currentPriceNewLoan: undefined,
+  feesNewLoan: undefined,
+  interestNewLoan: undefined
+}
