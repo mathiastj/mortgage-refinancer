@@ -131,7 +131,7 @@ export default function MortgageInput({
     data.currentPrice = Math.min(data.currentPrice, 100)
 
     // Create shareable link
-    const newLink = `${window.location.origin}?${Object.entries(data)
+    const newLink = `${location.protocol + '//' + location.host + location.pathname}?${Object.entries(data)
       .map(([k, v]) => {
         const typedKey = k as keyof AllLoanInfo
         return `${loanInfoToQueryParam[typedKey]}=${encodeURIComponent(v)}`
