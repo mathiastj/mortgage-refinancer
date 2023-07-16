@@ -127,6 +127,9 @@ export default function MortgageInput({
       interestNewLoan: Number(target.interest_new_loan.value)
     }
 
+    // Doing a 'downwards' conversion of a loan with current price above 100, will always allow the user to convert the loan at price 100
+    data.currentPrice = Math.min(data.currentPrice, 100)
+
     // Create shareable link
     const newLink = `${window.location.origin}?${Object.entries(data)
       .map(([k, v]) => {
@@ -260,7 +263,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="current_price"
               label="Kurs nuværende lån"
-              tooltip="Kursen på det nuværende fastforrentede lån. Find først Fondskoden på Totalkredits MitHjem. Derefter find kursen hos Nasdaq. Fx ved at google DK0009537417, eller find den direkte hos https://www.nasdaqomxnordic.com/bonds/denmark"
+              tooltip="Kursen på det nuværende fastforrentede lån. Find først Fondskoden på Totalkredits MitHjem. Derefter find kursen hos Nasdaq. Fx ved at google DK0009537417, eller find den direkte hos https://www.nasdaqomxnordic.com/bonds/denmark. Kurser over 100 behandles som kurs 100, da lånet altid kan indfries til det."
             />
             <input
               type="number"
