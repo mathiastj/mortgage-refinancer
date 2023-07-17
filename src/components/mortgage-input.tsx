@@ -11,11 +11,16 @@ import { ParsedUrlQuery } from 'querystring'
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
 
-type LoanInfoDefaults = Omit<Partial<AllLoanInfo>, 'single' | 'churchTax' | 'customerKroner' | 'municipality'> & {
+type LoanInfoDefaults = Omit<
+  Partial<AllLoanInfo>,
+  'single' | 'churchTax' | 'customerKroner' | 'municipality' | 'instalmentFreeYearsLeft' | 'newLoanInstalmentFree'
+> & {
   single: boolean
   churchTax: boolean
   customerKroner: boolean
   municipality: MunicipalityType
+  instalmentFreeYearsLeft: number
+  newLoanInstalmentFree: boolean
 }
 
 const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
@@ -62,8 +67,10 @@ export default function MortgageInput({
   const [churchTax, setChurchTax] = React.useState(defaultValues.churchTax)
   const [customerKroner, setCustomerKroner] = React.useState(defaultValues.customerKroner)
   const [municipality, setMunicipality] = React.useState<MunicipalityType>(defaultValues.municipality)
-  const [instalmentFreeYearsLeft, setInstalmentFreeYearsLeft] = React.useState<number>(0) // TODO defaultValues.instalmentFreeYearsLeft
-  const [newLoanInstalmentFree, setNewLoanInstalmentFree] = React.useState(false) // TODO: defaultValues.newLoanInstalmentFree
+  const [instalmentFreeYearsLeft, setInstalmentFreeYearsLeft] = React.useState<number>(
+    defaultValues.instalmentFreeYearsLeft
+  )
+  const [newLoanInstalmentFree, setNewLoanInstalmentFree] = React.useState(defaultValues.newLoanInstalmentFree)
   const [copyLink, setCopyLink] = React.useState<null | string>(null)
 
   // Update the default values when the query params load
@@ -78,6 +85,8 @@ export default function MortgageInput({
     setChurchTax(loanInfoFromQuery.churchTax)
     setCustomerKroner(loanInfoFromQuery.customerKroner)
     setMunicipality(loanInfoFromQuery.municipality)
+    setNewLoanInstalmentFree(loanInfoFromQuery.newLoanInstalmentFree)
+    setInstalmentFreeYearsLeft(loanInfoFromQuery.instalmentFreeYearsLeft)
   }, [query])
 
   const onChurchTaxChange = () => {
@@ -350,7 +359,7 @@ export default function MortgageInput({
         <div className="flex items-start mb-6">
           <div className="flex items-center h-5">
             <input
-              id="instalment_free_new_loan"
+              id="new_loan_instalment_free"
               type="checkbox"
               value=""
               className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
@@ -359,7 +368,7 @@ export default function MortgageInput({
             />
           </div>
           <label
-            htmlFor="instalment_free_new_loan"
+            htmlFor="new_loan_instalment_free"
             className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
             10 års afdragsfrihed nyt lån

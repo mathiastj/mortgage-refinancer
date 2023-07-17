@@ -41,7 +41,6 @@ export type CalculatedLoan = {
   pricePostTax: number
 }[]
 
-// TODO: add extra charge difference
 export type LoanDifference =
   | {
       principalOldLoan: number
@@ -56,6 +55,9 @@ export type LoanDifference =
       instalmentOldLoan: number
       instalmentNewLoan: number
       instalmentDifference: number
+      extraChargeOldLoan: number
+      extraChargeNewLoan: number
+      extraChargeDifference: number
       totalPaymentPreTaxOldLoan: number
       totalPaymentPreTaxNewLoan: number
       totalPaymentPreTaxDifference: number

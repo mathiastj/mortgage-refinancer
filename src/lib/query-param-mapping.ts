@@ -15,7 +15,9 @@ export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
   currentPriceNewLoan: 'current_price_new_loan',
   feesNewLoan: 'fees_new_loan',
   interestNewLoan: 'interest_new_loan',
-  municipality: 'municipality'
+  municipality: 'municipality',
+  newLoanInstalmentFree: 'instalment_free_new_loan',
+  instalmentFreeYearsLeft: 'instalment_free_years_left'
 } as const
 
 export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
@@ -32,7 +34,9 @@ export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
   currentPriceNewLoan: 'number',
   feesNewLoan: 'number',
   interestNewLoan: 'number',
-  municipality: 'municipality'
+  municipality: 'municipality',
+  newLoanInstalmentFree: 'boolean',
+  instalmentFreeYearsLeft: 'number'
 } as const
 
 export const defaultValuesFromQueryParams = {
@@ -49,5 +53,7 @@ export const defaultValuesFromQueryParams = {
   municipality: Municipality.KØBENHAVN,
   currentPriceNewLoan: undefined,
   feesNewLoan: undefined,
-  interestNewLoan: undefined
+  interestNewLoan: undefined,
+  newLoanInstalmentFree: false,
+  instalmentFreeYearsLeft: 0
 }
