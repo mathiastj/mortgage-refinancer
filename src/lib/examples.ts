@@ -27,7 +27,9 @@ const convertUp = {
   customerKroner: true,
   currentPriceNewLoan: 95,
   feesNewLoan: 15000,
-  interestNewLoan: 4
+  interestNewLoan: 4,
+  newLoanInstalmentFree: false,
+  instalmentFreeYearsLeft: 0
 }
 
 // Converting down from 4% to 2%
@@ -45,5 +47,7 @@ const convertDown = {
   customerKroner: true,
   currentPriceNewLoan: 98,
   feesNewLoan: 15000,
-  interestNewLoan: 2
+  interestNewLoan: 2,
+  newLoanInstalmentFree: false,
+  instalmentFreeYearsLeft: 0
 }
