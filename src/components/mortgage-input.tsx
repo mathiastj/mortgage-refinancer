@@ -11,11 +11,16 @@ import { ParsedUrlQuery } from 'querystring'
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
 
-type LoanInfoDefaults = Omit<Partial<AllLoanInfo>, 'single' | 'churchTax' | 'customerKroner' | 'municipality'> & {
+type LoanInfoDefaults = Omit<
+  Partial<AllLoanInfo>,
+  'single' | 'churchTax' | 'customerKroner' | 'municipality' | 'instalmentFreeYearsLeft' | 'newLoanInstalmentFree'
+> & {
   single: boolean
   churchTax: boolean
   customerKroner: boolean
   municipality: MunicipalityType
+  instalmentFreeYearsLeft: number
+  newLoanInstalmentFree: boolean
 }
 
 const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
@@ -62,6 +67,10 @@ export default function MortgageInput({
   const [churchTax, setChurchTax] = React.useState(defaultValues.churchTax)
   const [customerKroner, setCustomerKroner] = React.useState(defaultValues.customerKroner)
   const [municipality, setMunicipality] = React.useState<MunicipalityType>(defaultValues.municipality)
+  const [instalmentFreeYearsLeft, setInstalmentFreeYearsLeft] = React.useState<number>(
+    defaultValues.instalmentFreeYearsLeft
+  )
+  const [newLoanInstalmentFree, setNewLoanInstalmentFree] = React.useState(defaultValues.newLoanInstalmentFree)
   const [copyLink, setCopyLink] = React.useState<null | string>(null)
 
   // Update the default values when the query params load
@@ -76,6 +85,8 @@ export default function MortgageInput({
     setChurchTax(loanInfoFromQuery.churchTax)
     setCustomerKroner(loanInfoFromQuery.customerKroner)
     setMunicipality(loanInfoFromQuery.municipality)
+    setNewLoanInstalmentFree(loanInfoFromQuery.newLoanInstalmentFree)
+    setInstalmentFreeYearsLeft(loanInfoFromQuery.instalmentFreeYearsLeft)
   }, [query])
 
   const onChurchTaxChange = () => {
@@ -84,6 +95,10 @@ export default function MortgageInput({
 
   const onCustomerKronerChange = () => {
     setCustomerKroner(!customerKroner)
+  }
+
+  const onNewLoanInstalmentFreeChange = () => {
+    setNewLoanInstalmentFree(!newLoanInstalmentFree)
   }
 
   const onSingleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,10 +133,12 @@ export default function MortgageInput({
       estimatedPrice: Number(target.estimated_price.value),
       otherInterestPerYear: Number(target.other_interest_per_year.value),
       currentPrice: Number(target.current_price.value),
+      instalmentFreeYearsLeft,
       single,
       churchTax,
       municipality,
       customerKroner,
+      newLoanInstalmentFree,
       currentPriceNewLoan: Number(target.current_price_new_loan.value),
       feesNewLoan: Number(target.fees_new_loan.value),
       interestNewLoan: Number(target.interest_new_loan.value)
@@ -210,6 +227,23 @@ export default function MortgageInput({
               required
               defaultValue={defaultValues.interest}
             />
+          </div>
+          <div>
+            <LabelWithTooltip inputId="instalment_free_years_left" label="År tilbage af afdragsfrihed" />
+            <select
+              id="instalment_free_years_left"
+              name="instalment_free_years_left"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={instalmentFreeYearsLeft}
+              onChange={e => setInstalmentFreeYearsLeft(Number(e.target.value))}
+            >
+              {/* Add years 0 through 10 */}
+              {Array.from({ length: 11 }, (v, i) => i).map(year => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <LabelWithTooltip
@@ -321,6 +355,24 @@ export default function MortgageInput({
               defaultValue={defaultValues.feesNewLoan}
             />
           </div>
+        </div>
+        <div className="flex items-start mb-6">
+          <div className="flex items-center h-5">
+            <input
+              id="new_loan_instalment_free"
+              type="checkbox"
+              value=""
+              className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+              checked={newLoanInstalmentFree}
+              onChange={onNewLoanInstalmentFreeChange}
+            />
+          </div>
+          <label
+            htmlFor="new_loan_instalment_free"
+            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            10 års afdragsfrihed nyt lån
+          </label>
         </div>
         <div className="flex items-start mb-6">
           <div className="flex items-center h-5">

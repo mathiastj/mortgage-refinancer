@@ -6,6 +6,7 @@ export type BasicLoanInfo = {
   extraCharge: number
   interest: number
   otherInterestPerYear: number
+  instalmentFreeYearsLeft: number
   single: boolean
   churchTax: boolean
   municipality: MunicipalityType
@@ -16,11 +17,13 @@ export type AllLoanInfo = {
   yearsLeft: number
   extraCharge: number
   interest: number
+  instalmentFreeYearsLeft: number
   estimatedPrice: number
   otherInterestPerYear: number
   currentPrice: number
   single: boolean
   churchTax: boolean
+  newLoanInstalmentFree: boolean
   municipality: MunicipalityType
   customerKroner: boolean
   feesNewLoan: number
@@ -52,6 +55,9 @@ export type LoanDifference =
       instalmentOldLoan: number
       instalmentNewLoan: number
       instalmentDifference: number
+      extraChargeOldLoan: number
+      extraChargeNewLoan: number
+      extraChargeDifference: number
       totalPaymentPreTaxOldLoan: number
       totalPaymentPreTaxNewLoan: number
       totalPaymentPreTaxDifference: number

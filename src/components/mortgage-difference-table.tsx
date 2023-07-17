@@ -61,13 +61,21 @@ export default function MortgageDifferenceTable({ loanDifference }: { loanDiffer
           </tr>
           <tr key="5">
             <td className="text-left">
+              <b>Bidragssats</b>
+            </td>
+            <td>{loanDifference.extraChargeOldLoan.toFixed(2)}</td>
+            <td>{loanDifference.extraChargeNewLoan.toFixed(2)}</td>
+            <td>{loanDifference.extraChargeDifference.toFixed(2)}</td>
+          </tr>
+          <tr key="6">
+            <td className="text-left">
               <b>Total tilbagebetaling før skat</b>
             </td>
             <td>{loanDifference.totalPaymentPreTaxOldLoan.toFixed(0)}</td>
             <td>{loanDifference.totalPaymentPreTaxNewLoan.toFixed(0)}</td>
             <td>{loanDifference.totalPaymentPreTaxDifference.toFixed(0)}</td>
           </tr>
-          <tr key="6">
+          <tr key="7">
             <td className="text-left">
               <b>Total tilbagebetaling efter skat</b>
             </td>
