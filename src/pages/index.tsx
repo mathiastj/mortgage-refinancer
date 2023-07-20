@@ -14,7 +14,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-4 pt-16">
       <GithubCorner />
       <div className="text-center text-4xl">
-        <p>Beregn omlægning af fastforrentet Totalkredit lån</p>
+        <p>Beregn omlægning af fastforrentet realkreditlån</p>
       </div>
       <div className="z-10 w-full max-w-fit items-center justify-between font-mono text-sm lg:flex py-4">
         <MortgageInput

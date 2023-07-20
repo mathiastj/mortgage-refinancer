@@ -1,5 +1,6 @@
 import { AllLoanInfo, BasicLoanInfo, CalculatedLoan, LoanDifference, TotalCalculation } from './types'
 import { municipalityTaxes } from './municipality-tax-2023'
+import { EXTRA_CHARGE_LOAN_INTERVALS, Institute } from './extra-charges'
 
 const DEDUCTABLE_SINGLE = 50000
 const DEDUCTABLE_COUPLE = 2 * DEDUCTABLE_SINGLE
@@ -25,7 +26,7 @@ export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
 
   const newLoanPrincipal = calculateNewPrincipal(loanInfo)
   let newLoanExtraCharge = calculateExtraCharge({ ...loanInfo, principal: newLoanPrincipal })
-  if (loanInfo.customerKroner) {
+  if (loanInfo.customerKroner && loanInfo.institute === Institute.TOTALKREDIT) {
     newLoanExtraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
   }
   const newCalculatedLoan = calculateAnnuityLoan({
@@ -236,36 +237,15 @@ function calculateTaxDeductionForYear(
   return taxDeduction
 }
 
-// https://www.totalkredit.dk/siteassets/dokumenter/privat/prisblad/prisblad--privat.pdf
-const LOAN_INTERVALS = [
-  {
-    from: 0,
-    to: 0.4,
-    charge: 0.45,
-    instalmentFreeCharge: 0.55
-  },
-  {
-    from: 0.4,
-    to: 0.6,
-    charge: 0.85,
-    instalmentFreeCharge: 1.15
-  },
-  {
-    from: 0.6,
-    to: 0.8,
-    charge: 1.2,
-    instalmentFreeCharge: 2.0
-  }
-]
-
 export const calculateExtraCharge = (loanInfo: AllLoanInfo): number => {
   // If the loan is instalment free, use the instalment free charge, otherwise use the normal charge
   const charge = loanInfo.newLoanInstalmentFree ? 'instalmentFreeCharge' : 'charge'
+  const loanIntervalsForInstitute = EXTRA_CHARGE_LOAN_INTERVALS[loanInfo.institute]
 
   const loanPercentageOfPropertyValue = loanInfo.principal / loanInfo.estimatedPrice
 
   let applicableLoanIntervals = 0
-  for (const interval of LOAN_INTERVALS) {
+  for (const interval of loanIntervalsForInstitute) {
     if (loanPercentageOfPropertyValue > interval.from) {
       applicableLoanIntervals++
     }
@@ -280,14 +260,15 @@ export const calculateExtraCharge = (loanInfo: AllLoanInfo): number => {
     if (i === applicableLoanIntervals - 1) {
       // Calculate how much of the last interval the loan percentage is, then calculate the extra charge for the remaining percentage
       const extraChargeForInterval =
-        ((loanPercentageOfPropertyValue - LOAN_INTERVALS[i].from) / loanPercentageOfPropertyValue) *
-        LOAN_INTERVALS[i][charge]
+        ((loanPercentageOfPropertyValue - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) *
+        loanIntervalsForInstitute[i][charge]
       extraChargePct.push(extraChargeForInterval)
       continue
     }
     // Get the extra charge for this interval
     const extraChargeForInterval =
-      ((LOAN_INTERVALS[i].to - LOAN_INTERVALS[i].from) / loanPercentageOfPropertyValue) * LOAN_INTERVALS[i][charge]
+      ((loanIntervalsForInstitute[i].to - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) *
+      loanIntervalsForInstitute[i][charge]
     extraChargePct.push(extraChargeForInterval)
   }
 

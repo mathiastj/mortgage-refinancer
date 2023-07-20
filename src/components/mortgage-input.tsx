@@ -7,13 +7,20 @@ import { getLoanInfoFromExample } from '../lib/examples'
 import { loanInfoToQueryParam, loanInfoToTypes, defaultValuesFromQueryParams } from '../lib/query-param-mapping'
 import { useQuery } from '../lib/use-query'
 import { ParsedUrlQuery } from 'querystring'
+import { Institute, InstituteType, isInstitute } from '@/lib/extra-charges'
 
 type SetCalculatedLoanInfoFn = (calculatedLoanInfo: CalculatedLoan) => void
 type SetLoanDifferenceFn = (loanDifference: LoanDifference) => void
 
 type LoanInfoDefaults = Omit<
   Partial<AllLoanInfo>,
-  'single' | 'churchTax' | 'customerKroner' | 'municipality' | 'instalmentFreeYearsLeft' | 'newLoanInstalmentFree'
+  | 'single'
+  | 'churchTax'
+  | 'customerKroner'
+  | 'municipality'
+  | 'instalmentFreeYearsLeft'
+  | 'newLoanInstalmentFree'
+  | 'institute'
 > & {
   single: boolean
   churchTax: boolean
@@ -21,6 +28,7 @@ type LoanInfoDefaults = Omit<
   municipality: MunicipalityType
   instalmentFreeYearsLeft: number
   newLoanInstalmentFree: boolean
+  institute: InstituteType
 }
 
 const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefaults => {
@@ -36,6 +44,13 @@ const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefau
     municipality = municipalityInput
   }
 
+  // Validate institute from input
+  let institute: InstituteType = Institute.TOTALKREDIT // Default to Totalkredit
+  const instituteInput = query[loanInfoToQueryParam['institute']]
+  if (instituteInput && !Array.isArray(instituteInput) && isInstitute(instituteInput)) {
+    institute = instituteInput
+  }
+
   const defaultLoanInfo: LoanInfoDefaults = Object.entries(loanInfoToQueryParam).reduce((acc, [key, queryKey]) => {
     const typedKey = key as keyof AllLoanInfo
     if (loanInfoToTypes[typedKey] === 'number') {
@@ -47,7 +62,7 @@ const getDefaultLoanInfoFromQueryParams = (query: ParsedUrlQuery): LoanInfoDefau
     return { ...acc, [typedKey]: undefined }
   }, defaultValuesFromQueryParams)
 
-  return { ...defaultLoanInfo, municipality }
+  return { ...defaultLoanInfo, municipality, institute }
 }
 
 export default function MortgageInput({
@@ -67,6 +82,7 @@ export default function MortgageInput({
   const [churchTax, setChurchTax] = React.useState(defaultValues.churchTax)
   const [customerKroner, setCustomerKroner] = React.useState(defaultValues.customerKroner)
   const [municipality, setMunicipality] = React.useState<MunicipalityType>(defaultValues.municipality)
+  const [institute, setInstitute] = React.useState<InstituteType>(defaultValues.institute)
   const [instalmentFreeYearsLeft, setInstalmentFreeYearsLeft] = React.useState<number>(
     defaultValues.instalmentFreeYearsLeft
   )
@@ -87,6 +103,7 @@ export default function MortgageInput({
     setMunicipality(loanInfoFromQuery.municipality)
     setNewLoanInstalmentFree(loanInfoFromQuery.newLoanInstalmentFree)
     setInstalmentFreeYearsLeft(loanInfoFromQuery.instalmentFreeYearsLeft)
+    setInstitute(loanInfoFromQuery.institute)
   }, [query])
 
   const onChurchTaxChange = () => {
@@ -141,7 +158,8 @@ export default function MortgageInput({
       newLoanInstalmentFree,
       currentPriceNewLoan: Number(target.current_price_new_loan.value),
       feesNewLoan: Number(target.fees_new_loan.value),
-      interestNewLoan: Number(target.interest_new_loan.value)
+      interestNewLoan: Number(target.interest_new_loan.value),
+      institute
     }
 
     // Doing a 'downwards' conversion of a loan with current price above 100, will always allow the user to convert the loan at price 100
@@ -355,6 +373,26 @@ export default function MortgageInput({
               defaultValue={defaultValues.feesNewLoan}
             />
           </div>
+          <div>
+            <LabelWithTooltip
+              inputId="institute"
+              label="Realkreditinstitut"
+              tooltip="Bidragssats regnes forskelligt for hver enkelt realkreditinstitut."
+            />
+            <select
+              id="institute"
+              name="institute"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value={institute}
+              onChange={e => setInstitute(e.target.value as InstituteType)}
+            >
+              {Object.values(Institute).map(institute => (
+                <option key={institute} value={institute}>
+                  {institute}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="flex items-start mb-6">
           <div className="flex items-center h-5">
@@ -424,25 +462,28 @@ export default function MortgageInput({
             />
           </div>
         </div>
-        <div className="flex items-start mb-6">
-          <div className="flex items-center h-5">
-            <input
-              id="customer_kroner"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-              checked={customerKroner}
-              onChange={onCustomerKronerChange}
+        {institute === Institute.TOTALKREDIT && (
+          <div className="flex items-start mb-6">
+            <div className="flex items-center h-5">
+              <input
+                id="customer_kroner"
+                type="checkbox"
+                value=""
+                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                checked={customerKroner}
+                onChange={onCustomerKronerChange}
+              />
+            </div>
+            <label htmlFor="customer_kroner" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+              Inkluder kundekroner
+            </label>
+            <LabelWithTooltip
+              inputId="customer_kroner"
+              tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
             />
           </div>
-          <label htmlFor="customer_kroner" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-            Inkluder kundekroner
-          </label>
-          <LabelWithTooltip
-            inputId="customer_kroner"
-            tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
-          />
-        </div>
+        )}
+
         <div className="grid">
           <button
             type="submit"

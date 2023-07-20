@@ -1,3 +1,4 @@
+import { Institute } from './extra-charges'
 import { Municipality } from './municipality-tax-2023'
 import { AllLoanInfo } from './types'
 
@@ -29,7 +30,8 @@ const convertUp = {
   feesNewLoan: 15000,
   interestNewLoan: 4,
   newLoanInstalmentFree: false,
-  instalmentFreeYearsLeft: 0
+  instalmentFreeYearsLeft: 0,
+  institute: Institute.TOTALKREDIT
 }
 
 // Converting down from 4% to 2%
@@ -49,5 +51,6 @@ const convertDown = {
   feesNewLoan: 15000,
   interestNewLoan: 2,
   newLoanInstalmentFree: false,
-  instalmentFreeYearsLeft: 0
+  instalmentFreeYearsLeft: 0,
+  institute: Institute.TOTALKREDIT
 }
