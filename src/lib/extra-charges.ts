@@ -1,14 +1,19 @@
-export const Institutes = {
+export const Institute = {
   JYSKE: 'Jyske Realkredit',
   TOTALKREDIT: 'Totalkredit',
   RD: 'Realkredit Danmark',
   NORDEA: 'Nordea'
 } as const
 
-export type InstituesType = (typeof Institutes)[keyof typeof Institutes]
+export type InstituteType = (typeof Institute)[keyof typeof Institute]
 
+export const isInstitute = (value: string): value is InstituteType => {
+  return Object.values(Institute).includes(value as InstituteType)
+}
+
+// In Danish these are called Bidragssatser, perhaps they could be translated to contribution margins
 export const EXTRA_CHARGE_LOAN_INTERVALS: {
-  [Key in InstituesType]: {
+  [Key in InstituteType]: {
     from: number
     to: number
     charge: number
@@ -16,7 +21,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
   }[]
 } = {
   // https://www.totalkredit.dk/siteassets/dokumenter/privat/prisblad/prisblad--privat.pdf
-  [Institutes.TOTALKREDIT]: [
+  [Institute.TOTALKREDIT]: [
     {
       from: 0,
       to: 0.4,
@@ -37,7 +42,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
     }
   ],
   // https://www.jyskebank.dk/privat/priser/bolig
-  [Institutes.JYSKE]: [
+  [Institute.JYSKE]: [
     {
       from: 0,
       to: 0.4,
@@ -58,7 +63,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
     }
   ],
   // https://www.nordea.dk/Images/144-119161/20170105bidragssatser_.pdf
-  [Institutes.NORDEA]: [
+  [Institute.NORDEA]: [
     {
       from: 0,
       to: 0.4,
@@ -79,7 +84,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
     }
   ],
   // https://rd.dk/PDF/Privat/prisblad-privat.pdf tillæg på 0,0500 %-point medregnet, så det er kvartalsvist og sammenligneligt med de andre institutter
-  [Institutes.RD]: [
+  [Institute.RD]: [
     {
       from: 0,
       to: 0.4,

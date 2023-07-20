@@ -1,3 +1,4 @@
+import { Institute } from './extra-charges'
 import { Municipality } from './municipality-tax-2023'
 import { AllLoanInfo } from './types'
 
@@ -16,8 +17,9 @@ export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
   feesNewLoan: 'fees_new_loan',
   interestNewLoan: 'interest_new_loan',
   municipality: 'municipality',
-  newLoanInstalmentFree: 'instalment_free_new_loan',
-  instalmentFreeYearsLeft: 'instalment_free_years_left'
+  newLoanInstalmentFree: 'new_loan_instalment_free',
+  instalmentFreeYearsLeft: 'instalment_free_years_left',
+  institute: 'institute'
 } as const
 
 export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
@@ -36,7 +38,8 @@ export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
   interestNewLoan: 'number',
   municipality: 'municipality',
   newLoanInstalmentFree: 'boolean',
-  instalmentFreeYearsLeft: 'number'
+  instalmentFreeYearsLeft: 'number',
+  institute: 'institute'
 } as const
 
 export const defaultValuesFromQueryParams = {
@@ -55,5 +58,6 @@ export const defaultValuesFromQueryParams = {
   feesNewLoan: undefined,
   interestNewLoan: undefined,
   newLoanInstalmentFree: false,
-  instalmentFreeYearsLeft: 0
+  instalmentFreeYearsLeft: 0,
+  institute: Institute.TOTALKREDIT
 }

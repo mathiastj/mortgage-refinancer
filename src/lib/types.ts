@@ -1,3 +1,4 @@
+import { InstituteType } from './extra-charges'
 import { MunicipalityType } from './municipality-tax-2023'
 
 export type BasicLoanInfo = {
@@ -29,6 +30,7 @@ export type AllLoanInfo = {
   feesNewLoan: number
   interestNewLoan: number
   currentPriceNewLoan: number
+  institute: InstituteType
 }
 
 export type CalculatedLoan = {
