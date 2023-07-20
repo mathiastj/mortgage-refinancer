@@ -83,7 +83,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
       instalmentFreeCharge: 1.825
     }
   ],
-  // https://rd.dk/PDF/Privat/prisblad-privat.pdf tillæg på 0,0500 %-point medregnet, så det er kvartalsvist og sammenligneligt med de andre institutter
+  // https://rd.dk/PDF/Privat/prisblad-privat.pdf Added extra of 0.0500 %-point, in case of quaterly payments to compare with other institutes
   [Institute.RD]: [
     {
       from: 0,
@@ -101,7 +101,7 @@ export const EXTRA_CHARGE_LOAN_INTERVALS: {
       from: 0.6,
       to: 0.8,
       charge: 1.4,
-      instalmentFreeCharge: 2.4
+      instalmentFreeCharge: 2.2
     }
   ]
 }
