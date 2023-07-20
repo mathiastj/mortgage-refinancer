@@ -1,6 +1,6 @@
 # Mortgage Refinancer
 
-Calculate refinancing of fixed Danish Totalkredit mortgages with and without "instalments"/afdrag.
+Calculate refinancing of fixed Danish mortgages with and without "instalments"/afdrag.
 
 Use on desktop, there's a lot of tables and numbers.
 https://mathiastj.github.io/mortgage-refinancer/
@@ -32,6 +32,7 @@ I wanted to try out React Hooks and Tailwind CSS with a Next.js setup.
 - Show the price with or without "kundekroner", a discount on the "bidragssats" (extra charges).
 - Easily compare old and new loan in two tables next to each other.
 - Switch from an instalment free loan to one with instalments, or the other way around.
+- Select mortgage institute from the 4 large Danish providers for the new loan. Makes it easy to compare the "bidragssats" (extra charges) between the institutes.
 
 Here's a screenshot from desktop:
 ![image](https://user-images.githubusercontent.com/2278040/235747060-d47aed9a-f8f2-41c6-a5fc-32c5bea5e060.png)
