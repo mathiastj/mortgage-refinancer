@@ -462,25 +462,28 @@ export default function MortgageInput({
             />
           </div>
         </div>
-        <div className="flex items-start mb-6">
-          <div className="flex items-center h-5">
-            <input
-              id="customer_kroner"
-              type="checkbox"
-              value=""
-              className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
-              checked={customerKroner}
-              onChange={onCustomerKronerChange}
+        {institute === Institute.TOTALKREDIT && (
+          <div className="flex items-start mb-6">
+            <div className="flex items-center h-5">
+              <input
+                id="customer_kroner"
+                type="checkbox"
+                value=""
+                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                checked={customerKroner}
+                onChange={onCustomerKronerChange}
+              />
+            </div>
+            <label htmlFor="customer_kroner" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+              Inkluder kundekroner
+            </label>
+            <LabelWithTooltip
+              inputId="customer_kroner"
+              tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
             />
           </div>
-          <label htmlFor="customer_kroner" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-            Inkluder kundekroner
-          </label>
-          <LabelWithTooltip
-            inputId="customer_kroner"
-            tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
-          />
-        </div>
+        )}
+
         <div className="grid">
           <button
             type="submit"
