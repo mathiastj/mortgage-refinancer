@@ -5,6 +5,7 @@ import { AllLoanInfo } from './types'
 export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
   principal: 'principal',
   yearsLeft: 'terms_left',
+  yearsNewLoan: 'terms_new_loan',
   extraCharge: 'extra_charge',
   interest: 'interest',
   estimatedPrice: 'estimated_price',
@@ -25,6 +26,7 @@ export const loanInfoToQueryParam: { [key in keyof AllLoanInfo]: string } = {
 export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
   principal: 'number',
   yearsLeft: 'number',
+  yearsNewLoan: 'number',
   extraCharge: 'number',
   interest: 'number',
   estimatedPrice: 'number',
@@ -45,6 +47,7 @@ export const loanInfoToTypes: { [key in keyof AllLoanInfo]: string } = {
 export const defaultValuesFromQueryParams = {
   principal: undefined,
   yearsLeft: undefined,
+  yearsNewLoan: undefined,
   extraCharge: undefined,
   interest: undefined,
   estimatedPrice: undefined,

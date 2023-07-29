@@ -33,7 +33,7 @@ export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
     extraCharge: newLoanExtraCharge,
     interest: loanInfo.interestNewLoan,
     principal: newLoanPrincipal,
-    yearsLeft: loanInfo.yearsLeft,
+    yearsLeft: loanInfo.yearsNewLoan,
     otherInterestPerYear: loanInfo.otherInterestPerYear,
     single: loanInfo.single,
     churchTax: loanInfo.churchTax,
@@ -67,22 +67,34 @@ const calculateLoanDifference = (
   let sumNewPaymentsPreTax = 0
   let sumOldPaymentsPostTax = 0
   let sumNewPaymentsPostTax = 0
-  for (let i = 0; i < oldCalculatedLoan.length; i++) {
+
+  let maxYears = Math.max(oldCalculatedLoan.length, newCalculatedLoan.length);
+  for (let i = 0; i < maxYears; i++) {
     // Years are not zero indexed
     const currentYear = i + 1
-    if (newCalculatedLoan[i].principal > oldCalculatedLoan[i].principal && yearsTilBreakevenPrincipal === -1) {
-      yearsTilBreakevenPrincipal = currentYear
+
+    if(oldCalculatedLoan.length >= currentYear) {
+      if (newCalculatedLoan.length >= currentYear && newCalculatedLoan[i].principal > oldCalculatedLoan[i].principal && yearsTilBreakevenPrincipal === -1) {
+        yearsTilBreakevenPrincipal = currentYear
+      }
+      if (
+        newCalculatedLoan.length >= currentYear && newCalculatedLoan[i].pricePostTax > oldCalculatedLoan[i].pricePostTax &&
+        yearsTilBreakevenPaymentPostTax === -1
+      ) {
+        yearsTilBreakevenPaymentPostTax = currentYear
+      }
+
+
+      sumOldPaymentsPreTax += oldCalculatedLoan[i].pricePreTax
+      sumOldPaymentsPostTax += oldCalculatedLoan[i].pricePostTax
     }
-    if (
-      newCalculatedLoan[i].pricePostTax > oldCalculatedLoan[i].pricePostTax &&
-      yearsTilBreakevenPaymentPostTax === -1
-    ) {
-      yearsTilBreakevenPaymentPostTax = currentYear
+
+    if(newCalculatedLoan.length >= currentYear) {
+      sumNewPaymentsPreTax += newCalculatedLoan[i].pricePreTax
+      sumNewPaymentsPostTax += newCalculatedLoan[i].pricePostTax
     }
-    sumOldPaymentsPreTax += oldCalculatedLoan[i].pricePreTax
-    sumNewPaymentsPreTax += newCalculatedLoan[i].pricePreTax
-    sumOldPaymentsPostTax += oldCalculatedLoan[i].pricePostTax
-    sumNewPaymentsPostTax += newCalculatedLoan[i].pricePostTax
+    
+
     if (sumNewPaymentsPostTax > sumOldPaymentsPostTax && yearsTilTotalBreakevenPaymentsPostTax === -1) {
       yearsTilTotalBreakevenPaymentsPostTax = currentYear
     }

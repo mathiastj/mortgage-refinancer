@@ -16,6 +16,7 @@ export type BasicLoanInfo = {
 export type AllLoanInfo = {
   principal: number
   yearsLeft: number
+  yearsNewLoan: number
   extraCharge: number
   interest: number
   instalmentFreeYearsLeft: number
