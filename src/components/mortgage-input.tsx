@@ -17,6 +17,7 @@ type LoanInfoDefaults = Omit<
   | 'single'
   | 'churchTax'
   | 'customerKroner'
+  | 'rdQuarterlyPayments'
   | 'municipality'
   | 'instalmentFreeYearsLeft'
   | 'newLoanInstalmentFree'
@@ -25,6 +26,7 @@ type LoanInfoDefaults = Omit<
   single: boolean
   churchTax: boolean
   customerKroner: boolean
+  rdQuarterlyPayments: boolean
   municipality: MunicipalityType
   instalmentFreeYearsLeft: number
   newLoanInstalmentFree: boolean
@@ -81,6 +83,7 @@ export default function MortgageInput({
   const [single, setSingle] = React.useState(defaultValues.single)
   const [churchTax, setChurchTax] = React.useState(defaultValues.churchTax)
   const [customerKroner, setCustomerKroner] = React.useState(defaultValues.customerKroner)
+  const [rdQuarterlyPayments, setRdQuarterlyPayments] = React.useState(defaultValues.rdQuarterlyPayments)
   const [municipality, setMunicipality] = React.useState<MunicipalityType>(defaultValues.municipality)
   const [institute, setInstitute] = React.useState<InstituteType>(defaultValues.institute)
   const [instalmentFreeYearsLeft, setInstalmentFreeYearsLeft] = React.useState<number>(
@@ -100,6 +103,7 @@ export default function MortgageInput({
     setSingle(loanInfoFromQuery.single)
     setChurchTax(loanInfoFromQuery.churchTax)
     setCustomerKroner(loanInfoFromQuery.customerKroner)
+    setRdQuarterlyPayments(loanInfoFromQuery.rdQuarterlyPayments)
     setMunicipality(loanInfoFromQuery.municipality)
     setNewLoanInstalmentFree(loanInfoFromQuery.newLoanInstalmentFree)
     setInstalmentFreeYearsLeft(loanInfoFromQuery.instalmentFreeYearsLeft)
@@ -112,6 +116,10 @@ export default function MortgageInput({
 
   const onCustomerKronerChange = () => {
     setCustomerKroner(!customerKroner)
+  }
+
+  const onRdQuarterlyPaymentsChange = () => {
+    setRdQuarterlyPayments(!rdQuarterlyPayments)
   }
 
   const onNewLoanInstalmentFreeChange = () => {
@@ -155,6 +163,7 @@ export default function MortgageInput({
       churchTax,
       municipality,
       customerKroner,
+      rdQuarterlyPayments,
       newLoanInstalmentFree,
       currentPriceNewLoan: Number(target.current_price_new_loan.value),
       feesNewLoan: Number(target.fees_new_loan.value),
@@ -482,6 +491,28 @@ export default function MortgageInput({
               tooltip="Totalkredit giver indtil videre 0.15% rabat, tjek denne af hvis det skal medregnes. De 0.15% trækkes fra bidragssatsen på både det nye og det gamle lån."
             />
           </div>
+        )}
+
+        {institute === Institute.RD && (
+                  <div className="flex items-start mb-6">
+                    <div className="flex items-center h-5">
+                      <input
+                        id="rd_quarterly_payments"
+                        type="checkbox"
+                        value=""
+                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
+                        checked={rdQuarterlyPayments}
+                        onChange={onRdQuarterlyPaymentsChange}
+                      />
+                    </div>
+                    <label htmlFor="rd_quarterly_payments" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                      Betal kvartalvist
+                    </label>
+                    <LabelWithTooltip
+                      inputId="rd_quarterly_payments"
+                      tooltip="Realkredit Danmark øger bidragssatsen med 0.05%-point hvis der betales kvartalvis."
+                    />
+                  </div>
         )}
 
         <div className="grid">

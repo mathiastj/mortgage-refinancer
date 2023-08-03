@@ -8,8 +8,10 @@ const DEDUCTABLE_COUPLE = 2 * DEDUCTABLE_SINGLE
 const EXTRA_DEDUCTABLE_PERCENT_BELOW_LIMIT = 8
 
 const QUARTERS_PER_YEAR = 4
+const MONTHS_PER_YEAR = 12
 
 const CUSTOMER_KRONER_EXTRA_CHARGE_REBATE = 0.15
+const RD_EXTRA_CHARGE_PERCENTAGE_FOR_QUARTERLY = 0.05
 
 type YearlyPayment = {
   yearlyExtraCharge: number
@@ -22,7 +24,9 @@ export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
   if (loanInfo.customerKroner && loanInfo.institute === Institute.TOTALKREDIT) {
     loanInfo.extraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
   }
-  const oldCalculatedLoan = calculateAnnuityLoan(loanInfo)
+  const termsPerYear = loanInfo.institute == Institute.RD && !loanInfo.rdQuarterlyPayments ? MONTHS_PER_YEAR : QUARTERS_PER_YEAR
+
+  const oldCalculatedLoan = calculateAnnuityLoan(loanInfo, termsPerYear)
 
   const newLoanPrincipal = calculateNewPrincipal(loanInfo)
   let newLoanExtraCharge = calculateExtraCharge({ ...loanInfo, principal: newLoanPrincipal })
@@ -39,7 +43,7 @@ export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
     churchTax: loanInfo.churchTax,
     municipality: loanInfo.municipality,
     instalmentFreeYearsLeft: loanInfo.newLoanInstalmentFree ? 10 : 0
-  })
+  }, termsPerYear)
 
   const loanDifference = calculateLoanDifference(oldCalculatedLoan, newCalculatedLoan, {
     oldLoan: loanInfo.extraCharge,
@@ -126,7 +130,7 @@ const calculateNewPrincipal = (loanInfo: AllLoanInfo): number => {
   return (currentLoanPrice + loanInfo.feesNewLoan) * newLoanPrice
 }
 
-const calculateAnnuityLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
+const calculateAnnuityLoan = (loanInfo: BasicLoanInfo, termsPerYear: number): CalculatedLoan => {
   const calculatedLoan: CalculatedLoan = []
   for (let years = 0; years < loanInfo.yearsLeft; years++) {
     let yearlyPayments = {
@@ -140,12 +144,10 @@ const calculateAnnuityLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
       ? calculatedLoan[years - 1].principal - calculatedLoan[years - 1].instalment
       : loanInfo.principal
 
-    // Calculate payments per quarter/term
-    for (let quarters = 0; quarters < QUARTERS_PER_YEAR; quarters++) {
-      const quarterlyTermsLeft = (loanInfo.yearsLeft - years) * QUARTERS_PER_YEAR - quarters
-      // const quartersPassed = years * QUARTERS_PER_YEAR + quarters
-      // const instalmentFreeQuartersLeft = loanInfo.instalmentFreeYearsLeft * QUARTERS_PER_YEAR - quarters
-      yearlyPayments = calculateQuarterlyPayments(loanInfo, quarterlyTermsLeft, principalLeft, yearlyPayments)
+    // Calculate payments per term
+    for (let terms = 0; terms < termsPerYear; terms++) {
+      const termsLeft = (loanInfo.yearsLeft - years) * termsPerYear - terms
+      yearlyPayments = calculateYearlyPayments(loanInfo, termsPerYear, termsLeft, principalLeft, yearlyPayments)
     }
 
     const taxDeduction = calculateTaxDeductionForYear(
@@ -186,9 +188,10 @@ const getBaseTax = (loanInfo: BasicLoanInfo): number => {
   return loanInfo.churchTax ? municipalityTaxRate.churchTax + municipalityTaxRate.tax : municipalityTaxRate.tax
 }
 
-function calculateQuarterlyPayments(
+function calculateYearlyPayments(
   loanInfo: BasicLoanInfo,
-  quarterlyTermsLeft: number,
+  termsPerYear: number,
+  termsLeft: number,
   principalLeft: number,
   yearlyPayments: {
     yearlyExtraCharge: number
@@ -199,18 +202,18 @@ function calculateQuarterlyPayments(
 ): YearlyPayment {
   const interestPercent = loanInfo.interest / 100
   const extraChargePercent = loanInfo.extraCharge / 100
-  const principalLeftForQuarter = principalLeft - yearlyPayments.yearlyInstalment
-  const quartersPassed = loanInfo.yearsLeft * QUARTERS_PER_YEAR - quarterlyTermsLeft
-  const instalmentFreeQuartersLeft = loanInfo.instalmentFreeYearsLeft * QUARTERS_PER_YEAR - quartersPassed
+  const principalLeftForTerm = principalLeft - yearlyPayments.yearlyInstalment
+  const termsPassed = loanInfo.yearsLeft * termsPerYear - termsLeft
+  const instalmentFreeTermsLeft = loanInfo.instalmentFreeYearsLeft * termsPerYear - termsPassed
 
-  const interest = (principalLeftForQuarter * interestPercent) / QUARTERS_PER_YEAR
+  const interest = (principalLeftForTerm * interestPercent) / termsPerYear
   const pricePreTaxPreExtra =
-    (principalLeftForQuarter * interestPercent) /
-    QUARTERS_PER_YEAR /
-    (1 - Math.pow(1 + interestPercent / QUARTERS_PER_YEAR, -quarterlyTermsLeft))
-  const instalment = instalmentFreeQuartersLeft > 0 ? 0 : pricePreTaxPreExtra - interest
-  const extraCharge = (principalLeftForQuarter * extraChargePercent) / QUARTERS_PER_YEAR
-  const pricePreTax = instalmentFreeQuartersLeft > 0 ? interest + extraCharge : pricePreTaxPreExtra + extraCharge
+    (principalLeftForTerm * interestPercent) /
+    termsPerYear /
+    (1 - Math.pow(1 + interestPercent / termsPerYear, -termsLeft))
+  const instalment = instalmentFreeTermsLeft > 0 ? 0 : pricePreTaxPreExtra - interest
+  const extraCharge = (principalLeftForTerm * extraChargePercent) / termsPerYear
+  const pricePreTax = instalmentFreeTermsLeft > 0 ? interest + extraCharge : pricePreTaxPreExtra + extraCharge
 
   return {
     yearlyExtraCharge: yearlyPayments.yearlyExtraCharge + extraCharge,
@@ -257,18 +260,20 @@ export const calculateExtraCharge = (loanInfo: AllLoanInfo): number => {
 
   const extraChargePct = []
   for (let i = 0; i < applicableLoanIntervals; i++) {
+    let chargeForCurrentInterval = loanIntervalsForInstitute[i][charge]
+    if(loanInfo.institute == Institute.RD && loanInfo.rdQuarterlyPayments) {
+      chargeForCurrentInterval += RD_EXTRA_CHARGE_PERCENTAGE_FOR_QUARTERLY
+    }
     if (i === applicableLoanIntervals - 1) {
       // Calculate how much of the last interval the loan percentage is, then calculate the extra charge for the remaining percentage
       const extraChargeForInterval =
-        ((loanPercentageOfPropertyValue - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) *
-        loanIntervalsForInstitute[i][charge]
+        ((loanPercentageOfPropertyValue - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) * chargeForCurrentInterval
       extraChargePct.push(extraChargeForInterval)
       continue
     }
     // Get the extra charge for this interval
     const extraChargeForInterval =
-      ((loanIntervalsForInstitute[i].to - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) *
-      loanIntervalsForInstitute[i][charge]
+      ((loanIntervalsForInstitute[i].to - loanIntervalsForInstitute[i].from) / loanPercentageOfPropertyValue) * chargeForCurrentInterval
     extraChargePct.push(extraChargeForInterval)
   }
 
