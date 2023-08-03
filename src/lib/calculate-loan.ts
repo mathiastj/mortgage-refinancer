@@ -19,7 +19,7 @@ type YearlyPayment = {
 }
 
 export const calculateLoan = (loanInfo: AllLoanInfo): TotalCalculation => {
-  if (loanInfo.customerKroner) {
+  if (loanInfo.customerKroner && loanInfo.institute === Institute.TOTALKREDIT) {
     loanInfo.extraCharge -= CUSTOMER_KRONER_EXTRA_CHARGE_REBATE
   }
   const oldCalculatedLoan = calculateAnnuityLoan(loanInfo)
