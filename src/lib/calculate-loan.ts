@@ -121,9 +121,9 @@ const calculateLoanDifference = (
 
 const calculateNewPrincipal = (loanInfo: AllLoanInfo): number => {
   const currentLoanPrice = loanInfo.principal * (loanInfo.currentPrice / 100)
-  const newLoanPrice = 1 + (1 - loanInfo.currentPriceNewLoan / 100)
+  const newLoanPrice = 1 / (loanInfo.currentPriceNewLoan / 100)
 
-  return currentLoanPrice * newLoanPrice + loanInfo.feesNewLoan
+  return (currentLoanPrice + loanInfo.feesNewLoan) * newLoanPrice
 }
 
 const calculateAnnuityLoan = (loanInfo: BasicLoanInfo): CalculatedLoan => {
