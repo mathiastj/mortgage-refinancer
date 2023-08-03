@@ -362,7 +362,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="fees_new_loan"
               label="Gebyrer ved omlægning"
-              tooltip="Hvad det koster at omlægge lånet. Lægges ind i det nye lån. Hvis man vil lave et ekstraordinært afdrag samtidig på fx 100.000 og de forventede omkostninger er 15.000 kan man indtaste -85.000"
+              tooltip="Hvad det koster at omlægge lånet. Lægges ind i det nye lån til kursen på det nye lån."
             />
             <input
               type="number"
