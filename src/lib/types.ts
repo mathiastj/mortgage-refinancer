@@ -27,6 +27,7 @@ export type AllLoanInfo = {
   newLoanInstalmentFree: boolean
   municipality: MunicipalityType
   customerKroner: boolean
+  rdQuarterlyPayments: boolean
   feesNewLoan: number
   interestNewLoan: number
   currentPriceNewLoan: number

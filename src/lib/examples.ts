@@ -31,7 +31,8 @@ const convertUp = {
   interestNewLoan: 4,
   newLoanInstalmentFree: false,
   instalmentFreeYearsLeft: 0,
-  institute: Institute.TOTALKREDIT
+  institute: Institute.TOTALKREDIT,
+  rdQuarterlyPayments: false
 }
 
 // Converting down from 4% to 2%
@@ -52,5 +53,6 @@ const convertDown = {
   interestNewLoan: 2,
   newLoanInstalmentFree: false,
   instalmentFreeYearsLeft: 0,
-  institute: Institute.TOTALKREDIT
+  institute: Institute.TOTALKREDIT,
+  rdQuarterlyPayments: false
 }
