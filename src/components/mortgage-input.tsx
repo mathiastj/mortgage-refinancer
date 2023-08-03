@@ -221,7 +221,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="extra_charge"
               label="Bidragssats i %"
-              tooltip="Kan findes på Totalkredits MitHjem. Det er bidragssatsen for det nuværende lån der skal indtastes."
+              tooltip="Kan fx findes på Totalkredits MitHjem. Det er bidragssatsen for det nuværende lån der skal indtastes."
             />
             <input
               type="number"
@@ -267,7 +267,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="estimated_price"
               label="Vurdering"
-              tooltip="Hvad huset cirka er værd i dag. Hvis ingen ide brug købspris. Bidragssatsen på det nye beregnes automatisk ud fra vurderingen og den restgælden på det nye lån"
+              tooltip="Hvad huset cirka er værd i dag. Hvis ingen ide brug købspris. Bidragssatsen på det nye lån beregnes automatisk ud fra vurderingen og restgælden på det nye lån"
             />
             <input
               type="number"
@@ -282,7 +282,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="other_interest_per_year"
               label="Andre renteudgifter per år"
-              tooltip="De første 50.000 i renteudgifter om året per person har et ekstra rentefradrag på 8%. Indtast her andre renteudgifter per år fra fx billån eller SU lån. Beregneren bruger så kun det overskydende ekstra rentefradrag på realkreditlånet. Se fodnote 4 her: https://www.skm.dk/skattetal/satser/skatte-og-afgiftsberegning/skattevaerdi-af-fradrag-i-2023/"
+              tooltip="De første 50.000 i renteudgifter om året per person har et ekstra rentefradrag på 8%. Indtast her andre renteudgifter per år fra fx billån eller SU lån. Beregneren bruger så kun det overskydende ekstra rentefradrag på realkreditlånet. Se fodnote 4 her: https://www.skm.dk/skattetal/satser/skatte-og-afgiftsberegning/skattevaerdi-af-fradrag-i-2023/"
             />
             <input
               type="number"
@@ -317,7 +317,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="current_price"
               label="Kurs nuværende lån"
-              tooltip="Kursen på det nuværende fastforrentede lån. Find først Fondskoden på Totalkredits MitHjem. Derefter find kursen hos Nasdaq. Fx ved at google DK0009537417, eller find den direkte hos https://www.nasdaqomxnordic.com/bonds/denmark. Kurser over 100 behandles som kurs 100, da lånet altid kan indfries til det."
+              tooltip="Kursen på det nuværende fastforrentede lån. Find fx fondskoden på Totalkredits MitHjem. Derefter find kursen hos Nasdaq. Fx ved at google DK0009537417, eller find den direkte hos https://www.nasdaqomxnordic.com/bonds/denmark. Kurser over 100 behandles som kurs 100, da lånet altid kan indfries til det."
             />
             <input
               type="number"
@@ -333,7 +333,7 @@ export default function MortgageInput({
             <LabelWithTooltip
               inputId="current_price_new_loan"
               label="Kurs nyt lån"
-              tooltip="Kursen på det nye lån. Kan ses direkte på Totalkredits hjemmeside: https://www.totalkredit.dk/boliglan/kurser-og-priser/"
+              tooltip="Kursen på det nye lån. Kan ses direkte på fx Totalkredits hjemmeside: https://www.totalkredit.dk/boliglan/kurser-og-priser. Bemærk at hvert realkreditinstitut tager en kursskæring på fx 0.2 kurspoint."
             />
             <input
               type="number"
