@@ -488,7 +488,7 @@ export default function MortgageInput({
             </label>
             <LabelWithTooltip
               inputId="customer_kroner"
-              tooltip="Totalkredit giver indtil videre 0.2% rabat, tjek denne af hvis det skal medregnes. De 0.2% trækkes fra bidragssatsen på både det nye og det gamle lån."
+              tooltip="Totalkredit giver indtil videre 0.25% rabat, tjek denne af hvis det skal medregnes. De 0.25% trækkes fra bidragssatsen på både det nye og det gamle lån."
             />
           </div>
         )}
